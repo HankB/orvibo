@@ -3,9 +3,9 @@ package s20
 
 import (
 	"fmt"
-	"net"
-	"os"
-	"strconv"
+	//"net"
+	//"os"
+	//"strconv"
 )
 
 /*
@@ -22,18 +22,35 @@ PADDING_2 = b'\x00\x00\x00\x00'
 ON = b'\x01'
 OFF = b'\x00'
 */
-const MAGIC := []byte { 0x68, 0x64 }
-const DISCOVERY = []byte {0x00, 0x06, 0x71, 0x61}
-const DISCOVERY_RESP = []byte {0x00, 0x2a, 0x71, 0x61}
-const SUBSCRIBE = []byte {x00, 0x1e, 0x63, 0x6c}
-const SUBSCRIBE_RESP = []byte {x00, 0x18, 0x63, 0x6c}
-const CONTROL = []byte {x00, 0x17, 0x64, 0x63}
-const CONTROL_RESP = []byte {x00, 0x17, 0x73, 0x66}
-const PADDING_1 = []byte {x20, 0x20, 0x20, 0x20, 0x20, 0x20}
-const PADDING_2 = []byte {x00, 0x00, 0x00, 0x00}
-const ON = []byte {x01}
-const OFF = []byte {x00}
+// string literals used to build messages, syntax strikingly similar to
+// python.
+const MAGIC = "\x68\x64"
+const DISCOVERY = "\x00\x06\x71\x61"
+const DISCOVERY_RESP = "\x00\x2a\x71\x61"
+const SUBSCRIBE = "\x00\x1e\x63\x6c"
+const SUBSCRIBE_RESP = "\x00\x18\x63\x6c"
+const CONTROL = "\x00\x17\x64\x63"
+const CONTROL_RESP = "\x00\x17\x73\x66"
+const PADDING_1 = "\x20\x20\x20\x20\x20\x20"
+const PADDING_2 = "\x00\x00\x00\x00"
+const ON = "\x01"
+const OFF = "\x00"
+
 
 func Good() (int) {
 	return 1
+}
+
+func Dump(b string) {
+    chars := 0                          // chars printed
+    for i := 0; i<len(b); i++ {         // iterate over string
+        if ((chars % 16) == 0) {          // starting a full row?
+            fmt.Printf("%8.8x", chars)
+        }
+        else if (chars % 8) == 0 {      // mid row?
+            fmt.Printf(" ")
+        }
+
+        fmt.Printf("%2.2x ", b[i])
+    }
 }

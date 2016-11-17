@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/HankB/orvibo/s20"
+	s20 "github.com/HankB/orvibo/s20"
 	"fmt"
 	"testing"
 )
@@ -12,11 +12,22 @@ func main() {
 	fmt.Println("Hello")
         // Output:
         // Hello
+
+        s20.Dump(s20.MAGIC)
+        // Output:
+        // [ 86 64 ]
 }
 
-func TestXxx(*testing.T) {o
-	if s20.Good() != 1 {
-		Fail("not good")
-	}
+func TestDump(t *testing.T) {
+        // this test does not work
+        s20.Dump(s20.MAGIC)
+        fmt.Println("Hello World")
+        // Output:
+        // [ 86 64 ]
 }
 
+func ExampleDump() {
+       s20.Dump(s20.MAGIC)
+        // Output:
+        // [ 68 64 ]
+}
