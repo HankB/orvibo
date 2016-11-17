@@ -21,7 +21,6 @@ func main() {
 func TestDump(t *testing.T) {
         // this test does not work
         s20.Dump(s20.MAGIC)
-        fmt.Println("Hello World")
         // Output:
         // [ 86 64 ]
 }

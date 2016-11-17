@@ -44,13 +44,13 @@ func Good() (int) {
 func Dump(b string) {
     chars := 0                          // chars printed
     for i := 0; i<len(b); i++ {         // iterate over string
-        if ((chars % 16) == 0) {          // starting a full row?
-            fmt.Printf("%8.8x", chars)
-        }
-        else if (chars % 8) == 0 {      // mid row?
+        if ((chars % 16) == 0) {        // starting a full row?
+            fmt.Printf("%8.8x  ", chars)
+        } else if ((chars % 8) == 0) {      // mid row?
             fmt.Printf(" ")
         }
 
         fmt.Printf("%2.2x ", b[i])
+        chars++
     }
 }
