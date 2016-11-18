@@ -1,12 +1,11 @@
 // Package to support operations involving the Orvibo S20
 package s20
 
-import (
-	"fmt"
-	//"net"
-	//"os"
-	//"strconv"
-)
+import "fmt"
+
+//"net"
+//"os"
+//"strconv"
 
 /*
 byte arrays in python used to build messages
@@ -41,8 +40,8 @@ func Good() int {
 }
 
 func Dump(b string) {
-	chars := 0                    // chars printed
-	asciiRep := ""
+	chars := 0 // chars printed
+	asciiRep := []byte{}
 	for i := 0; i < len(b); i++ { // iterate over string
 		if (chars % 16) == 0 { // starting a full row?
 			if chars > 0 { // starting a new line?
@@ -55,25 +54,24 @@ func Dump(b string) {
 		}
 
 		fmt.Printf("%2.2x ", b[i])
-		/*
 		if IsPrint(b[i]) {
-			asciiRep += b[i]
+			asciiRep = append(asciiRep, b[i])
 		} else {
-			asciiRep += "."
+			asciiRep = append(asciiRep, '.')
+			//asciiRep += "."
 		}
-			*/
 
 		chars++
 	}
 	for i := 0; (i+chars)%16 != 0; i++ {
 		fmt.Printf("   ")
 	}
-	fmt.Println("|%s|", asciiRep)
+	fmt.Printf("  |%s|", asciiRep)
 }
 
 func IsPrint(b byte) bool {
 	if b >= ' ' && b <= '~' {
 		return true
-		}
+	}
 	return false
 }

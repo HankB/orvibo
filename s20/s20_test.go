@@ -2,8 +2,9 @@ package s20
 
 import (
 	"fmt"
-	s20 "github.com/HankB/orvibo/s20"
 	"testing"
+
+	s20 "github.com/HankB/orvibo/s20"
 )
 
 func main() {
