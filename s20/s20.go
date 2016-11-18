@@ -36,21 +36,44 @@ const PADDING_2 = "\x00\x00\x00\x00"
 const ON = "\x01"
 const OFF = "\x00"
 
-
-func Good() (int) {
+func Good() int {
 	return 1
 }
 
 func Dump(b string) {
-    chars := 0                          // chars printed
-    for i := 0; i<len(b); i++ {         // iterate over string
-        if ((chars % 16) == 0) {        // starting a full row?
-            fmt.Printf("%8.8x  ", chars)
-        } else if ((chars % 8) == 0) {      // mid row?
-            fmt.Printf(" ")
-        }
+	chars := 0                    // chars printed
+	asciiRep := ""
+	for i := 0; i < len(b); i++ { // iterate over string
+		if (chars % 16) == 0 { // starting a full row?
+			if chars > 0 { // starting a new line?
+				fmt.Printf("\n%8.8x  ", chars)
+			} else {
+				fmt.Printf("%8.8x  ", chars)
+			}
+		} else if (chars % 8) == 0 { // mid row?
+			fmt.Printf(" ")
+		}
 
-        fmt.Printf("%2.2x ", b[i])
-        chars++
-    }
+		fmt.Printf("%2.2x ", b[i])
+		/*
+		if IsPrint(b[i]) {
+			asciiRep += b[i]
+		} else {
+			asciiRep += "."
+		}
+			*/
+
+		chars++
+	}
+	for i := 0; (i+chars)%16 != 0; i++ {
+		fmt.Printf("   ")
+	}
+	fmt.Println("|%s|", asciiRep)
+}
+
+func IsPrint(b byte) bool {
+	if b >= ' ' && b <= '~' {
+		return true
+		}
+	return false
 }
