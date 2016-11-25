@@ -1,6 +1,8 @@
 // Package to support operations involving the Orvibo S20
 package s20
 
+import "fmt"
+
 //"net"
 //"os"
 //"strconv"
@@ -21,18 +23,37 @@ OFF = b'\x00'
 */
 // string literals used to build messages, syntax strikingly similar to
 // python.
-const MAGIC = "\x68\x64"
-const DISCOVERY = "\x00\x06\x71\x61"
-const DISCOVERY_RESP = "\x00\x2a\x71\x61"
-const SUBSCRIBE = "\x00\x1e\x63\x6c"
-const SUBSCRIBE_RESP = "\x00\x18\x63\x6c"
-const CONTROL = "\x00\x17\x64\x63"
-const CONTROL_RESP = "\x00\x17\x73\x66"
-const PADDING_1 = "\x20\x20\x20\x20\x20\x20"
-const PADDING_2 = "\x00\x00\x00\x00"
-const ON = "\x01"
-const OFF = "\x00"
+const magic = "\x68\x64"
+const discovery = "\x00\x06\x71\x61"
+const discoveryResp = "\x00\x2a\x71\x61"
+const subscribe = "\x00\x1e\x63\x6c"
+const subscribeResp = "\x00\x18\x63\x6c"
+const control = "\x00\x17\x64\x63"
+const controlResp = "\x00\x17\x73\x66"
+const padding1 = "\x20\x20\x20\x20\x20\x20"
+const padding2 = "\x00\x00\x00\x00"
+const on = "\x01"
+const off = "\x00"
 
-func Good() int {
-	return 1
+var ssid = ""
+var ip = ""
+var pwd = ""
+var swStr = ""
+
+const udpRcvPort = 9884  // port we listen on
+const udpSndPort = 48899 // port S20 listens on
+
+// Init saves newtwork parameters for later usage and
+// opens the port
+func Init(IP string, SSID string, password string) {
+	ssid = SSID
+	ip = IP
+	pwd = password
+	swStr = fmt.Sprintf("%s:%d", ip, udpSndPort)
+
+}
+
+//Get returns 'object' parameters for testing
+func Get() (string, string, string) {
+	return ssid, ip, pwd
 }
