@@ -1,4 +1,4 @@
-// Package to support operations involving the Orvibo S20
+// Package s20 supports operations involving the Orvibo S20
 package s20
 
 import "fmt"
@@ -35,10 +35,10 @@ const padding2 = "\x00\x00\x00\x00"
 const on = "\x01"
 const off = "\x00"
 
-var ssid = ""
-var ip = ""
-var pwd = ""
-var swStr = ""
+var ssid = ""  // SSID we will pair with
+var ip = ""    // IP address used for pairing
+var pwd = ""   // password for SSID.
+var swStr = "" // string used to establish connection
 
 const udpRcvPort = 9884  // port we listen on
 const udpSndPort = 48899 // port S20 listens on
@@ -54,6 +54,6 @@ func Init(IP string, SSID string, password string) {
 }
 
 //Get returns 'object' parameters for testing
-func Get() (string, string, string) {
-	return ssid, ip, pwd
+func Get() (string, string, string, string) {
+	return ssid, ip, pwd, swStr
 }
