@@ -1,6 +1,12 @@
 # orvibo
 Orvibo S20 in Go (golang)
 
+## Status
+Work in progress
+Pairing is the present focus. Initial contact with a fake S20
+(https://bitbucket.org/HankB/orvibo-s20 S20-emulate) just accomplished.
+
+
 ## Purpose
 Provide a reason to write some Go code. Provide capability to manage the Orvibo
 S20 WiFi switch. Support comes in two phases. Initially the Orvibo must 'pair' with
