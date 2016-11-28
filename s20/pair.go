@@ -6,8 +6,6 @@ import (
 	"net"
 	"os"
 	"time"
-
-	txt "github.com/HankB/txtutil"
 )
 
 //type bufferSender func([]byte)
@@ -17,7 +15,8 @@ var sendSSID = "AT+WSSSID="                 // followed by SSID and '\r'
 var sendPWD = "AT+WSKEY=WPA2PSK,AES,"       // followed by password and '\n'
 var sendSTA = []byte("AT+WMODE=STA\n")      // complete to set s20 mode
 var sendRST = []byte("AT+Z\n")              // request s20 to reset
-var okReply = []byte("+ok")                 // ACK
+var sendVER = []byte("AT+LVER")             // request S/W version
+var okReply = []byte("+ok")                 // ACK (sent or received)
 
 var serverAddr *net.UDPAddr
 var ourAddr *net.UDPAddr
@@ -29,9 +28,12 @@ var conn *net.UDPConn
 func checkErr(err error) {
 	if err != nil {
 		fmt.Println("Error: ", err)
-		os.Exit(0)
+		os.Exit(1)
 	}
 }
+
+// revised error handling ... Print out an error mewsage and exit. There is No
+// recovery programmed for any errors that occur.
 
 //Pair will send messages that will encode SSID and password in message length
 func Pair() []string {
@@ -44,17 +46,18 @@ func Pair() []string {
 
 	// send SSID message
 	sendSSID = sendSSID + ssid + "\r"
-	fmt.Printf("SSID=\"%s\" result\"%s\"\n", ssid, sendSSID)
+	// fmt.Printf("SSID=\"%s\" result\"%s\"\n", ssid, sendSSID)
 	sendRcv([]byte(sendSSID))
 
 	// send WAP password
 	sendPWD = sendPWD + pwd + "\n"
-	fmt.Printf("PWD=\"%s\" result\"%s\"\n", pwd, sendPWD)
+	// fmt.Printf("PWD=\"%s\" result\"%s\"\n", pwd, sendPWD)
 	sendRcv([]byte(sendPWD))
 
 	// switch the s20 to station mode (from AP)
 	sendRcv(sendSTA)
 
+	fmt.Printf("S20 S/W Version '%s'\n", sendRcv(sendVER))
 	// and restart
 	sendRcv(sendRST)
 
@@ -71,34 +74,41 @@ func setupPairing() {
 	client := fmt.Sprintf("%s:%d", "10.10.100.150", udpRcvPort)
 	ourAddr, err = net.ResolveUDPAddr("udp", client)
 	checkErr(err)
-	fmt.Println("calling DialUDP()")
+	// fmt.Println("calling DialUDP()")
 	conn, err = net.DialUDP("udp", ourAddr, serverAddr)
 	checkErr(err)
-	fmt.Println("Established UDP socket")
+	// fmt.Println("Established UDP socket")
 }
 
 // Send a message and wait up to X seconds for a response
 func sendRcv(b []byte) []byte {
 	reply := make([]byte, 1024)
-	var readLen int
-	fmt.Println("sendRcv s:")
-	txt.Dump(string(b))
+	var length int
+	// fmt.Println("sendRcv s:")
+	// txt.Dump(string(b))
 
-	_, err = conn.Write(b)
+	length, err = conn.Write(b)
 	checkErr(err)
+	if length != len(b) {
+		fmt.Printf("Error: Write returned %d bytes, s/b %d\n", length, len(b))
+		os.Exit(1)
+	}
 	err = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-	readLen, err = conn.Read(reply)
 	checkErr(err)
-	fmt.Printf("reply len %d, \"%s\"\n", readLen, reply)
+	length, err = conn.Read(reply)
+	checkErr(err)
+	// fmt.Printf("reply length %d, \"%s\"\n", length, reply)
 	return reply
 
 }
 
 func send(b []byte) {
-	reply := make([]byte, 1024)
-	var readLen int
-
-	_, err = conn.Write(b)
+	var length int
+	length, err = conn.Write(b)
 	checkErr(err)
-	fmt.Printf("reply len %d, \"%s\"\n", readLen, reply)
+	if length != len(b) {
+		fmt.Printf("Error: Write returned %d bytes, s/b %d\n", length, len(b))
+		os.Exit(1)
+	}
+	// fmt.Printf("reply len %d, \"%s\"\n", readLen, reply)
 }
