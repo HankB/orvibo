@@ -2,10 +2,21 @@ package s20_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	s20 "github.com/HankB/orvibo/s20"
 )
+
+var ssid string
+var pwd string
+
+// fetch SSID and password from environment for testing
+func init() {
+	ssid = os.Getenv("SSID")
+	pwd = os.Getenv("PASSWORD")
+	fmt.Printf("SSID=%s, PWD=\"%s\"\n", ssid, pwd)
+}
 
 func ExampleDump() {
 	// txt.Dump(s20.MAGIC)
@@ -14,7 +25,7 @@ func ExampleDump() {
 }
 
 func ExampleInit() {
-	s20.Init("127.0.0.1", "ssid", "this is the password")
+	s20.Init("127.0.0.1", ssid, pwd)
 	fmt.Println(s20.Get())
 	// Output:
 	// ssid 127.0.0.1 this is the password 127.0.0.1:48899

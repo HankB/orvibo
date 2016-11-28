@@ -3,8 +3,8 @@ Orvibo S20 in Go (golang)
 
 ## Status
 Work in progress
-Pairing is the present focus. Initial contact with a fake S20
-(https://bitbucket.org/HankB/orvibo-s20 S20-emulate) just accomplished.
+Pairing is the present focus. Complete pairing sequence with a fake S20
+(https://bitbucket.org/HankB/orvibo-s20 S20-emulate.py) just accomplished.
 
 
 ## Purpose
