@@ -29,7 +29,8 @@ http://blog.slange.co.uk/orvibo-s20-wifi-power-socket/
 * Press the button on the S20 for longer than 5 seconds to put the S20 into (open) Access
 Point mode. (In this mode a blue indicator will flash at about 5 Hz. If a red indicator is flashing at that frequency, 
 press he button about 4 seconds.) A PC can then associate with the S20 and exchange messages that share the
-desired SSID and password. Described at https://stikonas.eu/wordpress/2015/02/24/reverse-engineering-orvibo-s20-socket/
+desired SSID and password. Described at https://stikonas.eu/wordpress/2015/02/24/reverse-engineering-orvibo-s20-socket/ (Note: This page states that communications with the S20 are via the UDP broadcast address. In this code the 
+address 1 less the broadcast address - .e.g .254 - was found to work.)
 
 ## Security
 Both pairing strategies expose the local WiFi password to snooping. Hopefully no one is
