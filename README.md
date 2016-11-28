@@ -5,12 +5,14 @@ Orvibo S20 in Go (golang)
 Work in progress
 Pairing is the present focus. Complete pairing sequence with a fake S20
 (https://bitbucket.org/HankB/orvibo-s20 S20-emulate.py) just accomplished.
+
 Pairing with a real S20 just accomplished!
 
 ## TODO
-* Check S20 replies and rework error handling
-* avoid hard coding of local and remote I addresses. (Will Orvibo allways assign
+* Check S20 replies and rework error handling.
+* Avoid hard coding of local and remote IP addresses. (Will Orvibo allways assign
   the same ones?)
+* Implement on ON/OFF copmmands.
 
 ## Purpose
 Provide a reason to write some Go code. Provide capability to manage the Orvibo
