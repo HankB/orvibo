@@ -15,7 +15,7 @@ var sendSSID = "AT+WSSSID="                 // followed by SSID and '\r'
 var sendPWD = "AT+WSKEY=WPA2PSK,AES,"       // followed by password and '\n'
 var sendSTA = []byte("AT+WMODE=STA\n")      // complete to set s20 mode
 var sendRST = []byte("AT+Z\n")              // request s20 to reset
-var sendVER = []byte("AT+LVER")             // request S/W version
+var sendVER = []byte("AT+LVER\n")           // request S/W version
 var okReply = []byte("+ok")                 // ACK (sent or received)
 
 var serverAddr *net.UDPAddr
@@ -44,6 +44,9 @@ func Pair() []string {
 	sendRcv(initiator)
 	send(okReply)
 
+	// request S/V version
+	fmt.Printf("S20 S/W Version '%s'\n", sendRcv(sendVER))
+
 	// send SSID message
 	sendSSID = sendSSID + ssid + "\r"
 	// fmt.Printf("SSID=\"%s\" result\"%s\"\n", ssid, sendSSID)
@@ -57,9 +60,8 @@ func Pair() []string {
 	// switch the s20 to station mode (from AP)
 	sendRcv(sendSTA)
 
-	fmt.Printf("S20 S/W Version '%s'\n", sendRcv(sendVER))
 	// and restart
-	sendRcv(sendRST)
+	send(sendRST)
 
 	return found
 }
