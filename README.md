@@ -10,8 +10,6 @@ Pairing with a real S20 just accomplished!
 
 ## TODO
 * Check S20 replies and rework error handling.
-* Avoid hard coding of local and remote IP addresses. (Will Orvibo allways assign
-  the same ones?)
 * Implement on ON/OFF copmmands.
 
 ## Purpose
