@@ -9,8 +9,7 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 Pairing with a real S20 just accomplished!
 
 ## TODO
-* Check S20 replies and rework error handling.
-* Implement on ON/OFF copmmands.
+* Implement on ON/OFF commands.
 
 ## Purpose
 Provide a reason to write some Go code. Provide capability to manage the Orvibo
