@@ -5,7 +5,12 @@ Orvibo S20 in Go (golang)
 Work in progress
 Pairing is the present focus. Complete pairing sequence with a fake S20
 (https://bitbucket.org/HankB/orvibo-s20 S20-emulate.py) just accomplished.
+Pairing with a real S20 just accomplished!
 
+## TODO
+* Check S20 replies and rework error handling
+* avoid hard coding of local and remote I addresses. (Will Orvibo allways assign
+  the same ones?)
 
 ## Purpose
 Provide a reason to write some Go code. Provide capability to manage the Orvibo
@@ -19,7 +24,7 @@ The switch supports additional functionality (timed on/off.)
 where the password is encoded in the length of the messages (or something like that.)
 This is probably more appropriate for Android/IOS apps. This method is described at
 http://blog.slange.co.uk/orvibo-s20-wifi-power-socket/
-* Press the button on the S20 for longer than 5 seconds to put the S20 into (open) Access 
+* Press the button on the S20 for longer than 5 seconds to put the S20 into (open) Access
 Point mode. A PC can then associate with the S20 and exchange messages that share the
 desired SSID and password. Described at https://stikonas.eu/wordpress/2015/02/24/reverse-engineering-orvibo-s20-socket/
 
@@ -28,10 +33,9 @@ Both pairing strategies expose the local WiFi password to snooping. Hopefully no
 trying to get your credentials when this process is performed.
 
 In normal operation it seems likely that the S20 communicates with a cloud server to
-provide remote control of the switch. This exposes the network to ongoing security risk. 
+provide remote control of the switch. This exposes the network to ongoing security risk.
 To midigate that, the S20 can be blocked from access int the Internet. Local operation is still
 supported.
 
 ## Protocol
 See details at http://pastebin.com/LfUhsbcS
-

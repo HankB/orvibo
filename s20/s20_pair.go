@@ -65,12 +65,13 @@ func Pair() []string {
 // and the response read.
 func setupPairing() {
 	// get server handle
-	server := fmt.Sprintf("127.0.0.1:%d", udpSndPort)
+	server := fmt.Sprintf("%s:%d", ip, udpSndPort)
 	serverAddr, err = net.ResolveUDPAddr("udp", server)
 	checkErr(err)
-	client := fmt.Sprintf("127.0.0.1:%d", udpRcvPort)
+	client := fmt.Sprintf("%s:%d", "10.10.100.150", udpRcvPort)
 	ourAddr, err = net.ResolveUDPAddr("udp", client)
 	checkErr(err)
+	fmt.Println("calling DialUDP()")
 	conn, err = net.DialUDP("udp", ourAddr, serverAddr)
 	checkErr(err)
 	fmt.Println("Established UDP socket")
