@@ -23,6 +23,6 @@ func main() {
 		usage(args[0], "")
 	}
 	fmt.Printf("Associating with \"%s\" using \"%s\"\n", args[1], args[2])
-	s20.Init("10.10.100.254", args[1], args[2])
+	s20.Init(s20.S20IP, args[1], args[2])
 	s20.Pair()
 }

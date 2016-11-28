@@ -35,25 +35,27 @@ const padding2 = "\x00\x00\x00\x00"
 const on = "\x01"
 const off = "\x00"
 
-var ssid = ""  // SSID we will pair with
-var ip = ""    // IP address used for pairing
-var pwd = ""   // password for SSID.
-var swStr = "" // string used to establish connection
+var ssid = "" // SSID we will pair with
+// var ip = ""    // IP address used for pairing
+var pwd = ""                // password for SSID.
+var swStr = ""              // string used to establish connection
+var s20IP = "10.10.100.254" // IP address used by the S20
+var ourIP = "10.10.100.150" // IP address S20 will assign to host
 
 const udpRcvPort = 9884  // port we listen on
 const udpSndPort = 48899 // port S20 listens on
 
 // Init saves newtwork parameters for later usage and
 // opens the port
-func Init(IP string, SSID string, password string) {
+func Init(SSID string, password string) {
 	ssid = SSID
-	ip = IP
+	// ip = IP
 	pwd = password
-	swStr = fmt.Sprintf("%s:%d", ip, udpSndPort)
+	swStr = fmt.Sprintf("%s:%d", s20IP, udpSndPort)
 
 }
 
 //Get returns 'object' parameters for testing
-func Get() (string, string, string, string) {
-	return ssid, ip, pwd, swStr
+func Get() (string, string, string) {
+	return ssid, pwd, swStr
 }
