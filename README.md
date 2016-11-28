@@ -27,7 +27,8 @@ where the password is encoded in the length of the messages (or something like t
 This is probably more appropriate for Android/IOS apps. This method is described at
 http://blog.slange.co.uk/orvibo-s20-wifi-power-socket/
 * Press the button on the S20 for longer than 5 seconds to put the S20 into (open) Access
-Point mode. A PC can then associate with the S20 and exchange messages that share the
+Point mode. (In this mode a blue indicator will flash at about 5 Hz. If a red indicator is flashing at that frequency, 
+press he button about 4 seconds.) A PC can then associate with the S20 and exchange messages that share the
 desired SSID and password. Described at https://stikonas.eu/wordpress/2015/02/24/reverse-engineering-orvibo-s20-socket/
 
 ## Security
@@ -36,7 +37,7 @@ trying to get your credentials when this process is performed.
 
 In normal operation it seems likely that the S20 communicates with a cloud server to
 provide remote control of the switch. This exposes the network to ongoing security risk.
-To midigate that, the S20 can be blocked from access int the Internet. Local operation is still
+To mitigate that, the S20 can be blocked from access int the Internet. Local operation is still
 supported.
 
 ## Protocol
