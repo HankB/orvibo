@@ -2,17 +2,20 @@
 package main
 
 import (
-"os"
-"fmt"
+	"fmt"
+	"os"
+
+	"github.com/HankB/orvibo/s20"
 )
 
 func usage(errstr string) {
-    if len(errstr) > 0 {
-        fmt.Println(errstr)
-    }
-    
+	if len(errstr) > 0 {
+		fmt.Println(errstr)
+	}
+
 }
 func main() {
 
+	s20.Discover(10)
 	os.Exit(0)
 }
