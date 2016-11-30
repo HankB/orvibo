@@ -12,13 +12,6 @@ import (
 // The outlets need to brouight into the network first (AKA paired)
 // and for that see pair.go
 
-// import (
-// "fmt"
-// "net"
-// "os"
-// "time"
-// )
-
 // Discover queries the local network to identify any
 // S20s that have been paired and are listening
 func Discover(timeout int) ([]string, error) {
@@ -27,26 +20,28 @@ func Discover(timeout int) ([]string, error) {
 	var readLen int
 	var fromAddr *net.UDPAddr
 
-	// get server connection
-	server := fmt.Sprintf("%s:%d", bcastIP, udpDiscoverPort) // "255.255.255.255", 10000
-	serverAddr, err = net.ResolveUDPAddr("udp", server)
-	checkErr(err)
-	ourAddr, err = net.ResolveUDPAddr("udp", "192.168.1.132:10000")
-	checkErr(err)
-	conn, err = net.DialUDP("udp", ourAddr, serverAddr)
+	// get network connection
+	ourAddr, err = net.ResolveUDPAddr("udp", ":10000")
+	conn, err = net.ListenUDP("udp", ourAddr)
 	checkErr(err)
 	defer conn.Close()
 
 	// send the Discover message
+	server := fmt.Sprintf("%s:%d", bcastIP, udpDiscoverPort) // "255.255.255.255", 10000
+	serverAddr, err = net.ResolveUDPAddr("udp", server)
+	checkErr(err)
+	checkErr(err)
 	discoverMsg := []byte(magic)
 	discoverMsg = append(discoverMsg, discovery...)
-	sendLen, err := conn.Write(discoverMsg)
+	sendLen, err := conn.WriteToUDP(discoverMsg, serverAddr)
 	checkErr(err)
 	fmt.Println("Sent", sendLen, "bytes")
 
-	// read one reply
-	readLen, fromAddr, err = conn.ReadFromUDP(inBuf)
-	fmt.Println("Read ", readLen, "bytesfrom ", fromAddr)
-	txtutil.Dump(string(inBuf[:readLen]))
+	// read all replies
+	for true {
+		readLen, fromAddr, err = conn.ReadFromUDP(inBuf)
+		fmt.Println("Read ", readLen, "bytesfrom ", fromAddr)
+		txtutil.Dump(string(inBuf[:readLen]))
+	}
 	return devices, nil
 }
