@@ -13,6 +13,7 @@ import (
 var initiator = []byte("HF-A11ASSISTHREAD") // initiate conversation with s20
 var sendSSID = "AT+WSSSID="                 // followed by SSID and '\r'
 var sendPWD = "AT+WSKEY=WPA2PSK,AES,"       // followed by password and '\n'
+var sendMID = "AT+WRMID="                   // complete to set s20 module ID
 var sendSTA = []byte("AT+WMODE=STA\n")      // complete to set s20 mode
 var sendRST = []byte("AT+Z\n")              // request s20 to reset
 var sendVER = []byte("AT+LVER\n")           // request S/W version
@@ -49,12 +50,14 @@ func Pair() []string {
 
 	// send SSID message
 	sendSSID = sendSSID + ssid + "\r"
-	// fmt.Printf("SSID=\"%s\" result\"%s\"\n", ssid, sendSSID)
 	sendRcv([]byte(sendSSID))
+
+	// semd module name
+	sendMID = sendMID + mid + "\n"
+	sendRcv([]byte(sendMID))
 
 	// send WAP password
 	sendPWD = sendPWD + pwd + "\n"
-	// fmt.Printf("PWD=\"%s\" result\"%s\"\n", pwd, sendPWD)
 	sendRcv([]byte(sendPWD))
 
 	// switch the s20 to station mode (from AP)
