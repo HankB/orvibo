@@ -16,6 +16,9 @@ func usage(errstr string) {
 }
 func main() {
 
-	s20.Discover(10)
+	s20s, _ := s20.Discover(10)
+	for _, s20 := range s20s {
+		fmt.Println(s20)
+	}
 	os.Exit(0)
 }
