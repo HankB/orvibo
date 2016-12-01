@@ -10,6 +10,8 @@ Pairing with a real S20 just accomplished!
 
 ## TODO
 * Implement on ON/OFF commands.
+* IOmplement alternate pairing method. Present only works for hosts with WiFi 
+and when associated with the Orvibo S20.
 
 ## Purpose
 Provide a reason to write some Go code. Provide capability to manage the Orvibo
@@ -37,6 +39,22 @@ In normal operation it seems likely that the S20 communicates with a cloud serve
 provide remote control of the switch. This exposes the network to ongoing security risk.
 To mitigate that, the S20 can be blocked from access int the Internet. Local operation is still
 supported.
+
+## testing
+Some tests are provided in `s20_test.go`. Before running them the following
+environment variables should be set.
+
+    export SSID=<your SSID>
+    export PASSWORD="<password-for-your-AP"
+    export MODULE_ID="hostname-for-S20"
+
+    go test -v s20/s20_test.go
+
+The best part about the test is that if your PC has associated with the S20 in pairing 
+mode, it will actually pair the S20 to your network! (Hmmm... Maybe that test should be 
+removed.) If the host running the test is not associated with the S20 the test will normally end with
+
+    Error:  dial udp 10.10.100.150:9884->10.10.100.254:48899: bind: cannot assign requested address
 
 ## Protocol
 See details at http://pastebin.com/LfUhsbcS
