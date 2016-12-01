@@ -2,8 +2,10 @@
 package s20
 
 import (
+	"bytes"
 	"fmt"
 	"net"
+	"reflect"
 	"time"
 
 	"github.com/HankB/txtutil"
@@ -15,9 +17,9 @@ import (
 
 // Discover queries the local network to identify any
 // S20s that have been paired and are listening
-func Discover(timeout int) ([]*net.UDPAddr, error) {
+func Discover(timeout int) ([]net.UDPAddr, error) {
 	inBuf := make([]byte, 1024)
-	devices := make([]*net.UDPAddr, 0)
+	devices := make([]net.UDPAddr, 0)
 	var readLen int
 	var fromAddr *net.UDPAddr
 
@@ -48,19 +50,43 @@ func Discover(timeout int) ([]*net.UDPAddr, error) {
 			noErr = false
 		} else {
 			fmt.Println("Read ", readLen, "bytes from ", fromAddr)
+			isMe, err := IsThisHost(fromAddr.IP)
+			checkErr(err)
+			if isMe { // Seeing our own transmission?
+				continue
+			}
 			found := false
 			for _, addrIter := range devices {
-				fmt.Println("comparing ", addrIter, fromAddr)
-				if addrIter == fromAddr {
+				fmt.Println("comparing ", addrIter, *fromAddr)
+				if reflect.DeepEqual(addrIter, *fromAddr) {
 					found = true
 				}
 			}
 			if !found {
-				devices = append(devices, fromAddr)
+				devices = append(devices, *fromAddr)
 				fmt.Println("adding", fromAddr, "len", len(devices))
 			}
 			txtutil.Dump(string(inBuf[:readLen]))
 		}
 	}
 	return devices, nil
+}
+
+// IsThisHost determine if the address belongs to localhost
+func IsThisHost(check net.IP) (bool, error) {
+	addr, err := net.InterfaceAddrs()
+	if err != nil {
+		return true, err // bool true meaningless here
+	}
+	// fmt.Println(addr)
+	for _, thisHost := range addr {
+		ourIP, _, err := net.ParseCIDR(thisHost.String())
+		if err != nil {
+			return true, err // bool true meaningless here
+		}
+		if bytes.Compare(ourIP, check) == 0 {
+			return true, nil
+		}
+	}
+	return false, nil
 }
