@@ -11,12 +11,14 @@ import (
 
 var ssid string
 var pwd string
+var mid string
 
 // fetch SSID and password from environment for testing
 func init() {
 	ssid = os.Getenv("SSID")
 	pwd = os.Getenv("PASSWORD")
-	fmt.Printf("SSID=%s, PWD=\"%s\"\n", ssid, pwd)
+	mid = os.Getenv("MODULE_ID")
+	fmt.Printf("SSID=%s, PWD=\"%s\" MID=\"%s\"\n", ssid, pwd, mid)
 }
 
 func ExampleDump() {
@@ -26,7 +28,7 @@ func ExampleDump() {
 }
 
 func ExampleInit() {
-	s20.Init(ssid, pwd)
+	s20.Init(ssid, pwd, mid)
 	fmt.Println(s20.Get())
 	// Output:
 	// ssid 127.0.0.1 this is the password 127.0.0.1:48899
