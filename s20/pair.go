@@ -14,9 +14,10 @@ var initiator = []byte("HF-A11ASSISTHREAD") // initiate conversation with s20
 var sendSSID = "AT+WSSSID="                 // followed by SSID and '\r'
 var sendPWD = "AT+WSKEY=WPA2PSK,AES,"       // followed by password and '\n'
 var sendMID = "AT+WRMID="                   // complete to set s20 module ID
+var queryMID = "AT+MID\n"                   // send to squery s20 module ID
 var sendSTA = []byte("AT+WMODE=STA\n")      // complete to set s20 mode
 var sendRST = []byte("AT+Z\n")              // request s20 to reset
-var sendVER = []byte("AT+LVER\n")           // request S/W version
+var queryVER = []byte("AT+LVER\n")          // request S/W version
 var okReply = []byte("+ok")                 // ACK (sent or received)
 
 var serverAddr *net.UDPAddr
@@ -46,15 +47,21 @@ func Pair() []string {
 	send(okReply)
 
 	// request S/V version
-	fmt.Printf("S20 S/W Version '%s'\n", sendRcv(sendVER))
+	fmt.Printf("S20 S/W Version '%s'\n", sendRcv(queryVER))
+
+	// request modile ID
+	fmt.Printf("S20 MID '%s'\n", sendRcv([]byte(queryMID)))
+
+	// send module name
+	sendMID = sendMID + mid + "\n"
+	fmt.Printf("S20 send MID %s", sendRcv([]byte(sendMID)))
+
+	// confirm new module ID
+	fmt.Printf("S20 MID %s", sendRcv([]byte(queryMID)))
 
 	// send SSID message
 	sendSSID = sendSSID + ssid + "\r"
 	sendRcv([]byte(sendSSID))
-
-	// semd module name
-	sendMID = sendMID + mid + "\n"
-	sendRcv([]byte(sendMID))
 
 	// send WAP password
 	sendPWD = sendPWD + pwd + "\n"

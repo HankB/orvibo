@@ -55,7 +55,7 @@ func Init(SSID string, password string, module_ID string) {
 	// ip = IP
 	pwd = password
 	swStr = fmt.Sprintf("%s:%d", s20IP, udpSndPort)
-
+	mid = module_ID
 }
 
 //Get returns 'object' parameters for testing
