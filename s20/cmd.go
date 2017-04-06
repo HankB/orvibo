@@ -12,7 +12,7 @@ import (
 )
 
 // Code to find and send commands to Orvibo S20 WiFi controlled outlets
-// The outlets need to brouight into the network first (AKA paired)
+// The outlets need to brought into the network first (AKA paired)
 // and for that see pair.go
 
 // Discover queries the local network to identify any
