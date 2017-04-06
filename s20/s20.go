@@ -38,7 +38,7 @@ const off = "\x00"
 var ssid = ""  // SSID we will pair with
 var pwd = ""   // password for SSID.
 var swStr = "" // string used to establish connection
-var mid = ""   // name module will use
+var mid = ""   // name S20 module will use
 
 const s20IP = "10.10.100.254"     // IP address used by the S20
 const ourIP = "10.10.100.150"     // IP address S20 will assign to host
