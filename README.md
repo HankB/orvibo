@@ -56,7 +56,8 @@ To mitigate that, the S20 can be blocked from access int the Internet. Local ope
 ## Testing
 
 Some tests are provided in `s20_test.go`. Before running them the following
-environment variables should be set.
+environment variables can be set and will actually be sent to the S20. (If
+notr set, default values will be provided.)
 
     export SSID=<your SSID>
     export PASSWORD="<password-for-your-AP"
@@ -71,10 +72,11 @@ normally end with
 `
     Error:  dial udp 10.10.100.150:9884->10.10.100.254:48899: bind: cannot assign requested address
 `
+The `MODULE_ID` will be sent to the S20 and it will use it when it uses DHCP to request an IP address after associating with your WiFi AP. Some routers will display this name and resolve DNS requests to allow access to the S20 using that name.
 
 ## Protocol
 
-See details at http://pastebin.com/LfUhsbcS
+See details at `http://pastebin.com/LfUhsbcS`
 
 ## Errata
 
