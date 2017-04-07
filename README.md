@@ -10,14 +10,18 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 
 Pairing with a real S20 just accomplished!
 
+Presently working on splitting pairing off from other tests. The pairing test
+requires an S20 in AP mode and fails if not present. This causes the
+Example...() tests to not run. At present s20_test_pair.go does not execute.
+
 ## TODO
 
 * Implement on ON/OFF commands.
 * Implement alternate pairing method. Present only works for hosts with WiFi
   and when associated with the Orvibo S20.
 * Revisit testing and avoid the use of the environment variables.
-* Test to see if pairing can be performed while the S20 is already paired. (e.g. will the
-  S20 respond to the AT commands if it is not in AP mode)
+* Test to see if pairing can be performed while the S20 is already paired.
+  (e.g. will the S20 respond to the AT commands if it is not in AP mode)
 
 ## Purpose
 
