@@ -2,6 +2,12 @@
 
 Orvibo S20 in Go (golang)
 
+## Warning
+
+This is my first significant Go project and I'm sure I have much to learn. In
+particular the file naming and organization (and also package naming) may be
+unorthodox. Feel free to submit issues suggesting improvement.
+
 ## Status
 
 Work in progress
@@ -59,23 +65,76 @@ To mitigate that, the S20 can be blocked from access int the Internet. Local ope
 
 ## Testing
 
-Some tests are provided in `s20_test.go`. Before running them the following
-environment variables can be set and will actually be sent to the S20. (If
-notr set, default values will be provided.)
+Test files are presently separate from project sources and broken into two
+groups. First are those that do not require particular environmental
+configuration and can be expected to run without error. The second group
+require an S20 on the network and will not pass without a properly configured
+S20 on the LAN.
 
+### Stand alone test
+
+``` text
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$ go test -v github.com/HankB/orvibo/s20
+=== RUN   TestIsThisHost
+--- PASS: TestIsThisHost (0.00s)
+=== RUN   ExampleInit
+--- PASS: ExampleInit (0.00s)
+PASS
+ok  	github.com/HankB/orvibo/s20	0.002s
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvib
+```
+
+### Test with S20
+
+This first test exercises the pairing code that is used when the S20 is operating
+as an AP. To achieve this, power the S20 and long press the button twice until the
+indicator LED is flashing blue rapidly. The PC needs a WiFi interface associated
+with `WiWo-S20` (or access to a network that is connected to this AP.)
+Without environment variables the code will
+provide likely useless setup parameters. At the completion of the test the S20 will
+reset and shut down AP operation. Test output looks like:
+
+``` text
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$ go test -v github.com/HankB/orvibo/s20_pair_test
+=== RUN   TestPair
+SSID="NO_SSID", PWD="NO_PWD" MID="NO_MODULE_ID"
+S20 S/W Version '+ok=08 (2015-04-28 16:57 16B)
+
+'
+S20 MID '+ok=HF-LPB100
+
+'
+S20 send MID +ok
+
+S20 MID +ok=NO_MODULE_ID
+
+--- PASS: TestPair (0.38s)
+PASS
+ok  	github.com/HankB/orvibo/s20_pair_test	0.386s
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
+```
+
+If the test is performed without an S20 connected the results will look like:
+
+``` text
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$ go test -v github.com/HankB/orvibo/s20_pair_test
+=== RUN   TestPair
+SSID="NO_SSID", PWD="NO_PWD" MID="NO_MODULE_ID"
+Error:  dial udp 10.10.100.150:9884->10.10.100.254:48899: bind: cannot assign requested address
+exit status 1
+FAIL	github.com/HankB/orvibo/s20_pair_test	0.003s
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$ 
+```
+
+If the following environment variables are set before running this test, the
+S20 will be configured accordingly.
+
+``` text
     export SSID=<your SSID>
     export PASSWORD="<password-for-your-AP"
     export MODULE_ID="hostname-for-S20"
+```
 
-    go test -v s20/s20_test.go
-
-The best part about the test is that if your PC has associated with the S20 in pairing
-mode, it will actually pair the S20 to your network! (Hmmm... Maybe that test should be
-removed.) If the host running the test is not associated with the S20 the test will
-normally end with
-`
-    Error:  dial udp 10.10.100.150:9884->10.10.100.254:48899: bind: cannot assign requested address
-`
 The `MODULE_ID` will be sent to the S20 and it will use it when it uses DHCP to request an IP address after associating with your WiFi AP. Some routers will display this name and resolve DNS requests to allow access to the S20 using that name.
 
 ## Protocol
