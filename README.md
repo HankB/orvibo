@@ -16,12 +16,12 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 
 Pairing with a real S20 just accomplished!
 
-Presently working on splitting pairing off from other tests. The pairing test
-requires an S20 in AP mode and fails if not present. This causes the
-Example...() tests to not run. At present s20_test_pair.go does not execute.
+Testing factored and working again. &lt;sigh&gt;
 
 ## TODO
 
+* Check to see if pairing works with already paired device.
+* Work with Discovery.
 * Implement on ON/OFF commands.
 * Implement alternate pairing method. Present only works for hosts with WiFi
   and when associated with the Orvibo S20.
@@ -155,4 +155,6 @@ things WRT Go. Following is a list of the files and what I think they do.
 * `s20/cmd.go` Various functions used for interacting with a paired S20.
 * `s20/pair.go` Functions used to pair with an S20 which is operating as an AP.
 * `s20/s20.go` Predefined variables and utility functions such as Init() and Get().
-* `s20/s20_test.go` provides tests (uses package `s20_test`.)
+* `s20/s20_test.go` provides tests that do not require a configured S20
+* `s20_pair_test/` contains test that requires a configured S20
+* `s20_pair_test/s20_pair.go` Test pairing with a real S20.
