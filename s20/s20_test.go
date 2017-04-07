@@ -1,19 +1,20 @@
-package s20_test
+package s20
 
 import (
 	"fmt"
 	"net"
 	"os"
 	"testing"
-
-	s20 "github.com/HankB/orvibo/s20"
+	// s20 "github.com/HankB/orvibo/s20"
 )
 
+/*
 var ssid string
 var pwd string
 var mid string
 
 const magic = "\x68\x64" // copied rather than exported - just for testing
+*/
 
 // fetch SSID and password from environment for testing, substitute
 // some reasonable defaults if not provided.
@@ -34,8 +35,8 @@ func init() {
 }
 
 func ExampleInit() {
-	s20.Init("127.0.0.1", "this is the password", "DeviceID")
-	fmt.Println(s20.Get())
+	Init("127.0.0.1", "this is the password", "DeviceID")
+	fmt.Println(Get())
 	// Output:
 	// 127.0.0.1 this is the password 10.10.100.254:48899
 }
@@ -53,7 +54,7 @@ func TestIsThisHost(t *testing.T) {
 			fmt.Println(err)
 			t.Fail()
 		}
-		isMe, err := s20.IsThisHost(ourIP)
+		isMe, err := IsThisHost(ourIP)
 		if err != nil {
 			fmt.Println(err)
 			t.Fail()
@@ -69,7 +70,7 @@ func TestIsThisHost(t *testing.T) {
 		fmt.Println(err)
 		t.Fail()
 	}
-	isMe, err := s20.IsThisHost(ourIP)
+	isMe, err := IsThisHost(ourIP)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -85,7 +86,7 @@ func TestIsThisHost(t *testing.T) {
 // try to pair - keep this last as it fails if
 // the host is not associated with an S20 in AP mode.
 func TestPair(t *testing.T) {
-	s20s := s20.Pair()
+	s20s := Pair()
 	if len(s20s) != 0 {
 		t.Fail()
 	}
