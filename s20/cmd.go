@@ -17,8 +17,8 @@ import (
 
 // Discover queries the local network to identify any
 // S20s that have been paired and are listening
-func Discover(timeout int) ([]net.UDPAddr, error) {
-	inBuf := make([]byte, 1024)
+func Discover(timeout time.Duration) ([]net.UDPAddr, error) {
+	inBuf := make([]byte, readBufLen)
 	devices := make([]net.UDPAddr, 0)
 	var readLen int
 	var fromAddr *net.UDPAddr
@@ -42,43 +42,45 @@ func Discover(timeout int) ([]net.UDPAddr, error) {
 	fmt.Println("Sent", sendLen, "bytes")
 
 	// read all replies
-	err = conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
 	noErr := true
 	for noErr {
 		readLen, fromAddr, err = conn.ReadFromUDP(inBuf)
 		if err != nil {
 			noErr = false
 		} else {
-			fmt.Println("Read ", readLen, "bytes from ", fromAddr)
+			// fmt.Println("Read ", readLen, "bytes from ", fromAddr)
 			isMe, err := IsThisHost(fromAddr.IP)
 			checkErr(err)
 			if isMe { // Seeing our own transmission?
-				continue
+				continue // just ignore it. We're not an S20. ;)
 			}
 			found := false
 			for _, addrIter := range devices {
-				fmt.Println("comparing ", addrIter, *fromAddr)
+				// fmt.Println("comparing ", addrIter, *fromAddr)
 				if reflect.DeepEqual(addrIter, *fromAddr) {
 					found = true
 				}
 			}
 			if !found {
 				devices = append(devices, *fromAddr)
-				fmt.Println("adding", fromAddr, "len", len(devices))
+				fmt.Println("adding", fromAddr, "count", len(devices))
+				txtutil.Dump(string(inBuf[:readLen]))
 			}
-			txtutil.Dump(string(inBuf[:readLen]))
 		}
 	}
 	return devices, nil
 }
 
 // IsThisHost determine if the address belongs to localhost
+// Perhaps should be moved to netutil package
 func IsThisHost(check net.IP) (bool, error) {
+	//  get a list of our IP addresses
 	addr, err := net.InterfaceAddrs()
 	if err != nil {
 		return true, err // bool true meaningless here
 	}
-	// fmt.Println(addr)
+	// compare to the provided address
 	for _, thisHost := range addr {
 		ourIP, _, err := net.ParseCIDR(thisHost.String())
 		if err != nil {
