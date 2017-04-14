@@ -47,6 +47,8 @@ const bcastIP = "255.255.255.255" // broadcast IP address
 const udpRcvPort = 9884       // port we listen on when pairing
 const udpSndPort = 48899      // port S20 listens on when pairing
 const udpDiscoverPort = 10000 // port to send discovery message
+// const replyTimeout = 2        // reply timeout in seconds
+const readBufLen = 1024 // 1K read buffer
 
 // Init saves network parameters for later usage and
 // opens the port
