@@ -18,6 +18,8 @@ Pairing with a real S20 just accomplished!
 
 Testing factored and working again. &lt;sigh&gt;
 
+Working with Discover() to get the information required for Subscribe().
+
 ## TODO
 
 * Check to see if pairing works with already paired device.
