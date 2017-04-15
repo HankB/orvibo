@@ -1,0 +1,328 @@
+#####################################################################################################
+#####		Substitute 'ac cf 23 24 19 c0' for your own MAC Address in all commands		#####
+#####################################################################################################
+================================================================================================================================================================
+
+GLOBAL DISCOVERY DATA: Only needed to find IP Address and MAC Address of Unknown sockets, All configured sockets on network will reply.
+	SEND: UDP 255.255.255.255:10000
+		ASCII:
+			hd\00\06qa   
+		HEX:
+			68 64 00 06 71 61
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00*qa\00\ac\cf#$\t\88      \88\t$#\cf\ac      SOC002(\cal\d7\01
+		HEX:
+			68 64 00 2A 71 61 00 AC CF 23 24 19 C0 20 20 20 20 20 20 C0 19 24 23 CF AC 20 20 20 20 20 20 53 4F 43 30 30 32 28 CA 6C D7 01
+	
+	BREAKDOWN:
+		68 64 								- Magic Key
+
+		00 2A 								- Full Message Length = 42bytes
+
+		71 61 00							- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		C0 19 24 23 CF AC 						- Mac Address Little Endian
+		20 20 20 20 20 20 						- Mac Address Little Endian Padding
+
+		53 4F 43 30 30 32 						- = SOC002 (sometimes SOC001? Don't know what it means?)
+
+		28 CA 6C 							- Time since manufacture? ((28:40) + (ca:202) * 255 + (6c:108) * 255 * 255 = 7074210seconds = 81.87743055555556days)
+
+		D7 								- ??? Unknown ???
+
+		01								- Power state = off (00 = off, 01 = on)
+================================================================================================================================================================
+
+DISCOVERY DATA: Only needed to find IP Address of known sockets.
+	SEND: UDP 255.255.255.255:10000
+		ASCII:
+			hd\00\12qg\ac\cf#$\19\c0      
+		HEX:
+			68 64 00 12 71 67 ac cf 23 24 19 c0 20 20 20 20 20 20 
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00*qg\00\ac\cf#$\19\c0      \c0\19$#\cf\ac      SOC001\902j\d7\00
+		HEX:
+			68 64 00 2A 71 67 00 AC CF 23 24 19 C0 20 20 20 20 20 20 C0 19 24 23 CF AC 20 20 20 20 20 20 53 4F 43 30 30 31 90 32 6A D7 00
+	
+	BREAKDOWN:
+		68 64 								- Magic Key
+
+		00 2A 								- Full Message Length = 42bytes
+
+		71 67 00							- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		C0 19 24 23 CF AC 						- Mac Address Little Endian
+		20 20 20 20 20 20 						- Mac Address Little Endian Padding
+
+		53 4F 43 30 30 31 						- = SOC001 (sometimes SOC002? Don't know what it means?)
+
+		90 32 6A 							- Time since manufacture? ((90:144) + (32:50) * 255 + (6a:106) * 255 * 255 = 6905544seconds = 79.92527777777778days)
+
+		D7 								- ??? Unknown ???
+
+		00								- Power state = off (00 = off, 01 = on)
+================================================================================================================================================================
+SUBSCRIBE DATA: All Commands apart from discovery require a subscription first! 
+		(Note: Subscription expires after a few minutes)
+	SEND: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\1ecl\ac\cf#$\19\c0      \c0\19$#\cf\ac      
+		HEX:
+			68 64 00 1e 63 6c ac cf 23 24 19 c0 20 20 20 20 20 20 c0 19 24 23 cf ac 20 20 20 20 20 20
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\18cl\ac\cf#$\19\c0      \00\00\00\00\00\00
+		HEX:
+			68 64 00 18 63 6C AC CF 23 24 19 C0 20 20 20 20 20 20 00 00 00 00 00 00
+
+	BREAKDOWN:
+		68 64  								- Magic Key
+
+		00 18 								- Full Message Length = 24bytes
+
+		63 6C 								- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		00 00 00 00 00 							- ??? Unknown ???
+
+		00								- Power state = off (00 = off, 01 = on)
+
+
+================================================================================================================================================================
+TABLE DATA: (Table 1)
+	SEND: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\1drt\ac\cf#$\19\c0      \00\00\00\00\04\00\03\00\00\00\00
+		Hex:
+			68 64 00 1D 72 74 ac cf 23 24 19 c0 20 20 20 20 20 20 00 00 00 00 01 00 00 00 00 00 00
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00,rt\ac\cf#$\19\c0      \02\00\00\00\00\01\00\01\00\00\06\00\04\00\04\00\17\00\06\00\03\00\03\00\02\00
+		HEX:
+			68 64 00 2C 72 74 AC CF 23 24 19 C0 20 20 20 20 20 20 02 00 00 00 00 01 00 01 00 00 06 00 04 00 04 00 17 00 06 00 03 00 03 00 02 00
+
+	BREAKDOWN:
+		68 64 								- Magic Key
+
+		00 2C								- Full Message Length = 44bytes
+
+		72 74 								- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		00 00 00 00 							- ??? Unknown ???
+
+		01 								- Table Number
+
+		00 01 00 00 							- ??? Unknown ???
+
+		06 00								- Record Length Little Endian? = 6bytes
+		04 00 								- Version Number Little Endian = 4
+		04 00 								- Table Number Little Endian = 4 (Table 4 contains the Socket Data)
+		17 00 								- Version Flag Little Endian = 23
+
+		06 00 								- Record Length Little Endian? = 6bytes
+		03 00 								- Version Number Little Endian = 3
+		03 00 								- Table Number Little Endian = 3 (Table 3 contains Timing data)
+		02 00								- Version Flag Little Endian = 2
+
+		.....								- This repeats for all tables that need to be requested in sequence by the next function
+================================================================================================================================================================
+SOCKET DATA: (Table 4)
+	SEND: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\1drt\ac\cf#$\19\c0      \00\00\00\00\04\00\03\00\00\00\00
+		Hex:
+			68 64 00 1D 72 74 ac cf 23 24 19 c0 20 20 20 20 20 20 00 00 00 00 AA 00 BB 00 00 00 00 (Note: AA = Table Number = 04, BB = Version Flag = 17)
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\a8rt\ac\cf#$\19\c0      \00\00\00\00\00\04\00\01\00\00\8a\00\01\00C%\ac\cf#$\19\c0      \c0\19$#\cf\ac      888888      Office          \05\00\10\00\00\00\n\00\00\00\05\00\00\00\10'*yo\d0\10'vicenter.orvibo.com                     \c0\a8\01\c8\c0\a8\01\01\ff\ff\ff\00\01\01\00\08\00\00\0c\00
+		HEX:
+			68 64 00 A8 72 74 AC CF 23 24 19 C0 20 20 20 20 20 20 02 00 00 00 00 04 00 01 00 00 8A 00 01 00 43 25 AC CF 23 24 19 C0 20 20 20 20 20 20 C0 19 24 23 CF AC 20 20 20 20 20 20 38 38 38 38 38 38 20 20 20 20 20 20 4F 66 66 69 63 65 20 20 20 20 20 20 20 20 20 20 05 00 10 00 00 00 0A 00 00 00 05 00 00 00 10 27 2A 79 6F D0 10 27 76 69 63 65 6E 74 65 72 2E 6F 72 76 69 62 6F 2E 63 6F 6D 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 C0 A8 01 C8 C0 A8 01 01 FF FF FF 00 01 01 00 08 00 00 0C 00
+	BREAKDOWN:
+		68 64 								- Magic Key
+
+		00 A8 								- Full Message Length = 168bytes
+
+		72 74 								- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		02 00 								- Record ID Little Endian = 02
+
+		00 00 00 							- ??? Unknown ???
+
+		04 								- Table Number
+		
+		00 01 00 00 							- ??? Unknown ???
+
+		8A 00  								- Record Length Little Endian = 138bytes
+
+		01 00 								- Record Number Little Endian = 1
+
+		43 25								- VersionID Little Endian = 9539
+
+		AC CF 23 24 19 C0 						- UID (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- UID Padding
+
+		C0 19 24 23 CF AC 						- Mac Address Little Endian
+		20 20 20 20 20 20 						- Mac Address Little Endian Padding (spaces)
+
+		38 38 38 38 38 38 						- Remote Password = 888888 (max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Remote Password Padding (spaces)
+
+		4F 66 66 69 63 65 						- Socket Name = Office (Max Length = 16 = 32bytes)
+		20 20 20 20 20 20 20 20 20 20 					- Socket Name Padding (spaces)
+
+		05 00								- Icon Little Endian = 5 (0 = Light bulb, 1 = Fan , 2 = Thermostat , 3 = Double Switch , 4 = American Power Point , 5 = Aus Power Point)
+
+		10 00 00 00  							- Hardware Version = 16
+		0A 00 00 00  							- Firmware Version = 10
+		05 00 00 00 							- CC3000 Firmware Version = 5 (ti wifi chipset)
+
+		10 27 								- Static Server Port Little Endian = 10000
+		2A 79 6F D0 							- Static Server IP = 42.121.111.208
+		10 27 								- Domain Server Port Little Endian = 10000
+		76 69 63 65 6E 74 65 72 2E 6F 72 76 69 62 6F 2E 63 6F 6D 	- Domain Server Name = vicenter.orvibo.com (Max Length = 40 = 80bytes)
+		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 	- Domain Server Name Padding (spaces)
+
+		C0 A8 01 C8 							- Local Static IP = 192.168.1.200
+		C0 A8 01 01 							- Local Gateway IP = 192.168.1.1
+		FF FF FF 00 							- Local Net Mask = 255.255.255.0
+		01 								- DHCP Mode = yes (00 = no, 01 = yes)
+		01  								- Discoverable = yes (00 = no, 01 = yes)
+
+		00 								- Time Zone Set
+		08 								- Time Zone
+
+		00 00 	 							- ??? Unknown ???
+
+		0C 00								- Countdown Seconds = 12
+
+================================================================================================================================================================
+Timing DATA: (Table 3)
+	SEND: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\1drt\ac\cf#$\19\c0      \00\00\00\00\04\00\03\00\00\00\00
+		Hex:
+			68 64 00 1D 72 74 ac cf 23 24 19 c0 20 20 20 20 20 20 00 00 00 00 AA 00 BB 00 00 00 00 (Note: AA = Table Number = 03, BB = Version Flag = 02)
+
+	RECEIVE:
+		ASCII:
+			hd\00Xrt\ac\cf#$\t\88      \02\00\00\00\00\03\00\01\00\00\1c\00\01\00\e2r\80\00c\0e\00\00\00\\\de\16\00\a0\19\00\01\00\de\07\07\r\10\00\00\ff\1c\00\02\00\e2r\80\00q\0f\00\00Pr\d2\16\00\a0\19\00\00\00\de\07\07\r\13\00\00\ff
+		HEX:
+			68 64 00 58 72 74 AC CF 23 24 19 C0 20 20 20 20 20 20 02 00 00 00 00 03 00 01 00 00 1C 00 01 00 E2 72 80 00 63 0E 00 00 00 5C DE 16 00 A0 19 00 01 00 DE 07 07 0D 10 00 00 FF 1C 00 02 00 E2 72 80 00 71 0F 00 00 50 72 D2 16 00 A0 19 00 00 00 DE 07 07 0D 13 00 00 FF
+BREAKDOWN:
+		68 64 								- Magic Key
+
+		00 58 								- Full Message Length = 88bytes
+
+		72 74 								- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		02 00 								- Record ID Little Endian = 02
+
+		00 00 00 							- ??? Unknown ???
+
+		03 								- Table Number
+		
+		00 01 00 00 							- ??? Unknown ???
+
+		1C 00  								- Record Length Little Endian = 28bytes
+		01 00 								- Record Number Little Endian = 1
+		E2 72 80 00 63 0E 00 00 00 5C DE 16 00 A0 19 00 		- ??? Unknown ???
+		01 00 								- Power state = on (00 = off, 01 = on)
+		DE 07 								- Year Little Endian = 2014
+		07 								- Month = 7
+		0D 								- Day = 13
+		10 								- Hour - 2? = 18 = 6pm 
+		00 								- Minute = 00
+		00 								- Second = 00
+		FF 								- Repeat = 255 = Repeat Everyday (Bits: 128 = Repeat, 64 = Sunday, 32 = Monday, 16 = Tuesday, 8 = Wednesday, 4 = Thursday, 2 = Friday, 1 = Saturday)?
+
+		1C 00 								- Record Length Little Endian = 28bytes
+		02 00 								- Record Number Little Endian = 2
+		E2 72 80 00 71 0F 00 00 50 72 D2 16 00 A0 19 00 		- ??? Unknown ???
+		00 00 								- Power state = off (00 = off, 01 = on)
+		DE 07 								- Year Little Endian = 2014
+		07 								- Month = 7
+		0D 								- Day = 13 
+		13 								- Hour - 2? = 21 = 9pm 
+		00  								- Minute = 00
+		00  								- Second = 00
+		FF 								- Repeat = 255 = Repeat Everyday (Bits: 128 = Repeat, 64 = Sunday, 32 = Monday, 16 = Tuesday, 8 = Wednesday, 4 = Thursday, 2 = Friday, 1 = Saturday)?
+
+================================================================================================================================================================
+POWER ON DATA:
+	SEND: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\17dc\ac\cf#$\19\c0      \00\00\00\00\01     
+		HEX:
+			68 64 00 17 64 63 ac cf 23 24 19 c0 20 20 20 20 20 20 00 00 00 00 01
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\17sf\ac\cf#$\19\c0      \00\00\00\00\01
+		HEX:
+			68 64 00 17 73 66 AC CF 23 24 19 C0 20 20 20 20 20 20 00 00 00 00 01
+
+	BREAKDOWN:
+		68 64  								- Magic Key
+
+		00 17 								- Full Message Length = 23bytes
+
+		73 66 								- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		00 00 00 00 							- ??? Unknown ???
+
+		01								- Power state = on (00 = off, 01 = on)
+
+================================================================================================================================================================
+POWER OFF DATA:
+	SEND: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\17dc\ac\cf#$\19\c0      \00\00\00\00\00     
+		HEX:
+			68 64 00 17 64 63 ac cf 23 24 19 c0 20 20 20 20 20 20 00 00 00 00 00
+
+	RECEIVE: UDP x.x.x.x:10000
+		ASCII:
+			hd\00\17sf\ac\cf#$\19\c0      \00\00\00\00\01
+		HEX:
+			68 64 00 17 73 66 AC CF 23 24 19 C0 20 20 20 20 20 20 00 00 00 00 00
+
+	BREAKDOWN:
+		68 64  								- Magic Key
+
+		00 17 								- Full Message Length = 23bytes
+
+		73 66 								- Command ID ?
+
+		AC CF 23 24 19 C0 						- Mac Address (Max Length = 12 = 24bytes)
+		20 20 20 20 20 20 						- Mac Address Padding (spaces)
+
+		00 00 00 00 							- ??? Unknown ???
+
+		00								- Power state = off (00 = off, 01 = on)
