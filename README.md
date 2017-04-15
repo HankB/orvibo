@@ -86,6 +86,8 @@ hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvib
 
 ### Test with S20
 
+#### Pairing
+
 This first test exercises the pairing code that is used when the S20 is operating
 as an AP. To achieve this, power the S20 and long press the button twice until the
 indicator LED is flashing blue rapidly. The PC needs a WiFi interface associated
@@ -135,7 +137,32 @@ S20 will be configured accordingly.
     export MODULE_ID="hostname-for-S20"
 ```
 
-The `MODULE_ID` will be sent to the S20 and it will use it when it uses DHCP to request an IP address after associating with your WiFi AP. Some routers will display this name and resolve DNS requests to allow access to the S20 using that name.
+The `MODULE_ID` will be sent to the S20 and it will use it when it uses DHCP to
+request an IP address after associating with your WiFi AP. Some routers will
+display this name and resolve DNS requests to allow access to the S20 using that
+name.
+
+#### Discovery
+
+Identify the S20 devices on the network.
+
+``` text
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$ go run cmd/command/s20_cmd.go -d
+Sent 6 bytes
+adding 192.168.1.160:10000 count 1 on 1
+00000000  68 64 00 2a 71 61 00 ac  cf 23 55 fe 22 20 20 20  |hd.*qa...#U."   |
+00000010  20 20 20 22 fe 55 23 cf  ac 20 20 20 20 20 20 53  |   ".U#..      S|
+00000020  4f 43 30 30 35 5e a5 19  bc 01                    |OC005^....|
+0000002a
+adding 192.168.1.212:10000 count 2 on 0
+00000000  68 64 00 2a 71 61 00 ac  cf 23 36 02 0e 20 20 20  |hd.*qa...#6..   |
+00000010  20 20 20 0e 02 36 23 cf  ac 20 20 20 20 20 20 53  |   ..6#..      S|
+00000020  4f 43 30 30 35 52 ff 9b  dc 00                    |OC005R....|
+0000002a
+{{192.168.1.160 10000 } ac:cf:23:36:02:0e 0e:02:36:23:cf:ac true}
+{{192.168.1.212 10000 } ac:cf:23:36:02:0e 0e:02:36:23:cf:ac false}
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
+```
 
 ## Protocol
 
