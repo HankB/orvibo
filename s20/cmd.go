@@ -68,9 +68,9 @@ func Discover(timeout time.Duration) ([]Device, error) {
 				d := Device{IpAddr: *fromAddr}
 				d.Mac = inBuf[7 : 7+6]
 				d.ReverseMac = inBuf[7+12 : 7+6+12]
+				d.IsOn = inBuf[41] != 0
 				devices = append(devices, d)
-				// devices = append(devices, *fromAddr)
-				fmt.Println("adding", fromAddr, "count", len(devices))
+				fmt.Println("adding", fromAddr, "count", len(devices), "on", inBuf[41])
 				txtutil.Dump(string(inBuf[:readLen]))
 			}
 		}
