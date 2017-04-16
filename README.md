@@ -168,7 +168,7 @@ hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
 
 ## Protocol
 
-See details at `http://pastebin.com/LfUhsbcS`
+See details at `http://pastebin.com/LfUhsbcS` (Now part of project at orvibo_wifi_socket.txt)
 
 ## Errata
 
@@ -187,3 +187,10 @@ things WRT Go. Following is a list of the files and what I think they do.
 * `s20/s20_test.go` provides tests that do not require a configured S20
 * `s20_pair_test/` contains test that requires a configured S20
 * `s20_pair_test/s20_pair.go` Test pairing with a real S20.
+
+## References
+
+* Protocol description kindly provided at `https://pastebin.com/LfUhsbcS` and
+  copied here should the original ever be deleted.
+* Python implementation `https://github.com/happyleavesaoc/python-orvibo`
+* Partial Python implementation `https://bitbucket.org/HankB/orvibo-s20`
