@@ -15,6 +15,14 @@ import (
 // The outlets need to brought into the network first (AKA paired)
 // and for that see pair.go
 
+func unpackDiscoverResp(ip *net.UDPAddr, buff []byte) Device {
+	d := Device{IpAddr: *ip}
+	d.Mac = buff[7 : 7+6]
+	d.ReverseMac = buff[7+12 : 7+6+12]
+	d.IsOn = buff[41] != 0
+	return d
+}
+
 // Discover queries the local network to identify any
 // S20s that have been paired and are listening. The timeout
 // is how long the process will wait for a reply after sending
@@ -65,12 +73,13 @@ func Discover(timeout time.Duration) ([]Device, error) {
 				}
 			}
 			if !found {
-				d := Device{IpAddr: *fromAddr}
-				d.Mac = inBuf[7 : 7+6]
-				d.ReverseMac = inBuf[7+12 : 7+6+12]
-				d.IsOn = inBuf[41] != 0
+				// d := Device{IpAddr: *fromAddr}
+				// d.Mac = inBuf[7 : 7+6]
+				// d.ReverseMac = inBuf[7+12 : 7+6+12]
+				// d.IsOn = inBuf[41] != 0
+				d := unpackDiscoverResp(fromAddr, inBuf)
 				devices = append(devices, d)
-				fmt.Println("adding", fromAddr, "count", len(devices), "on", inBuf[41])
+				fmt.Println("adding", fromAddr, "count", len(devices), "on", inBuf[41], "mac", d.Mac)
 				txtutil.Dump(string(inBuf[:readLen]))
 			}
 		}
@@ -80,12 +89,15 @@ func Discover(timeout time.Duration) ([]Device, error) {
 
 // Subscribe subscribes to the S20 and is required before sending
 // further commands.
-func Subscribe(timeout time.Duration, sw net.UDPAddr) error {
-	xmitMsg := magic + subscribe
-	// xmitBuf := make([]byte, xmitBufLen)
-	// m := []byte(magic)
-	// xmitBuf = append(xmitBuf, m, subscribe)
-	txtutil.Dump(xmitMsg)
+func Subscribe(timeout time.Duration, s20device *Device) error {
+	// xmitMsg := magic + subscribe // + s20device.Mac.String()
+	xmitBuf := bytes.NewBufferString(magic + subscribe)
+	xmitBuf.Write(s20device.Mac)
+	xmitBuf.WriteString(padding1)
+	xmitBuf.Write(s20device.ReverseMac)
+	xmitBuf.WriteString(padding1)
+	fmt.Println("building subscription")
+	txtutil.Dump(xmitBuf.String())
 	return nil
 }
 
