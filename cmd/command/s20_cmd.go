@@ -23,13 +23,13 @@ func main() {
 		os.Exit(0)
 	} else if os.Args[1] == "-d" {
 		s20s, _ := s20.Discover(replyTimeout)
-		for _, s20s := range s20s {
-			fmt.Println(s20s)
+		for _, s20ds := range s20s {
+			fmt.Println(s20ds)
 		}
 		os.Exit(0)
 	} else if os.Args[1] == "-s" {
 		s20s, _ := s20.Discover(replyTimeout)
-		e := s20.Subscribe(replyTimeout, s20s[0].IpAddr)
+		e := s20.Subscribe(replyTimeout, &s20s[0])
 		fmt.Println("done", e)
 		os.Exit(0)
 	}
