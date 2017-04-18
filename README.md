@@ -166,6 +166,8 @@ adding 192.168.1.212:10000 count 2 on 0
 hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
 ```
 
+(Note: Spot the bug - now fixed - in the output above! Hint MAC addresses)
+
 ## Protocol
 
 See details at `http://pastebin.com/LfUhsbcS` (Now part of project at orvibo_wifi_socket.txt)
