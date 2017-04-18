@@ -17,8 +17,10 @@ import (
 
 func unpackDiscoverResp(ip *net.UDPAddr, buff []byte) Device {
 	d := Device{IpAddr: *ip}
-	d.Mac = buff[7 : 7+6]
-	d.ReverseMac = buff[7+12 : 7+6+12]
+	d.Mac = make([]byte, 6)
+	copy(d.Mac, buff[7:7+6])
+	d.ReverseMac = make([]byte, 6)
+	copy(d.ReverseMac, buff[7+12:7+6+12])
 	d.IsOn = buff[41] != 0
 	return d
 }
@@ -73,11 +75,8 @@ func Discover(timeout time.Duration) ([]Device, error) {
 				}
 			}
 			if !found {
-				// d := Device{IpAddr: *fromAddr}
-				// d.Mac = inBuf[7 : 7+6]
-				// d.ReverseMac = inBuf[7+12 : 7+6+12]
-				// d.IsOn = inBuf[41] != 0
 				d := unpackDiscoverResp(fromAddr, inBuf)
+				fmt.Println("unpacked", d)
 				devices = append(devices, d)
 				fmt.Println("adding", fromAddr, "count", len(devices), "on", inBuf[41], "mac", d.Mac)
 				txtutil.Dump(string(inBuf[:readLen]))
