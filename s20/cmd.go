@@ -101,8 +101,6 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	xmitBuf := bytes.NewBufferString(magic + subscribe)
 	xmitBuf.Write(s20device.Mac)
 	xmitBuf.WriteString(padding1)
-	xmitBuf.Write(s20device.ReverseMac)
-	xmitBuf.WriteString(padding1)
 	fmt.Println("building subscription")
 	txtutil.Dump(xmitBuf.String())
 
