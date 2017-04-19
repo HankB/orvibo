@@ -23,7 +23,7 @@ Working with Discover() to get the information required for Subscribe().
 ## TODO
 
 * Check to see if pairing works with already paired device.
-* Work with Discovery.
+* Rework error handling to do something more useful than print error and exit.
 * Implement on ON/OFF commands.
 * Implement alternate pairing method. Present only works for hosts with WiFi
   and when associated with the Orvibo S20.
