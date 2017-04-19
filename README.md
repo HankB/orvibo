@@ -15,10 +15,9 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 (`https://bitbucket.org/HankB/orvibo-s20` S20-emulate.py) just accomplished.
 
 Pairing with a real S20 just accomplished!
-
-Testing factored and working again. &lt;sigh&gt;
-
-Working with Discover() to get the information required for Subscribe().
+Discover() working.
+Subscribe() seems to be working.
+Command() sends message but no effect and no reply. (Subscribe() not really working?)
 
 ## TODO
 
