@@ -17,7 +17,8 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 Pairing with a real S20 just accomplished!
 Discover() working.
 Subscribe() seems to be working.
-Command() now working.
+Command() now working. Sometimes. When it does work, the S20 replies with the
+control message rather than controlResp. More investigation is required.
 
 ## TODO
 
