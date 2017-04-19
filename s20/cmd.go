@@ -3,6 +3,7 @@ package s20
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 	"reflect"
@@ -120,17 +121,18 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 
 	// read all replies
 	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
-	noErr := true
-	for noErr {
-		readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
-		if err != nil {
-			noErr = false
-		} else {
-			fmt.Println("Read ", readLen, "bytes from ", fromAddr)
-			fmt.Println("got reply from subscribe message")
-			txtutil.Dump(string(inBuf[:readLen]))
-		}
+	readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
+	if err != nil {
+		return err
 	}
+	fmt.Println("Subscribe Reply", readLen, "bytes from ", fromAddr)
+	txtutil.Dump(string(inBuf[:readLen]))
+	s20device.IsOn = inBuf[23] != 0 // capture on/off state
+	if bytes.Compare(inBuf[2:6], []byte(subscribeResp)) != 0 {
+		fmt.Println("unexpected reply")
+		return errors.New("unexpected response to subscribe")
+	}
+	s20device.subscriptionTime = time.Now()
 	return nil
 }
 
