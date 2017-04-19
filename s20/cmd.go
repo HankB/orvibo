@@ -95,6 +95,8 @@ func Discover(timeout time.Duration) ([]Device, error) {
 // Subscribe subscribes to the S20 and is required before sending
 // further commands.
 func Subscribe(timeout time.Duration, s20device *Device) error {
+	inBuf := make([]byte, readBufLen)
+
 	xmitBuf := bytes.NewBufferString(magic + subscribe)
 	xmitBuf.Write(s20device.Mac)
 	xmitBuf.WriteString(padding1)
@@ -111,48 +113,24 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	checkErr(err)
 	defer conn.Close()
 
-	/*
-		// send the Subscribe message
-		server := fmt.Sprintf("%s:%d", s20device.IpAddr, udpDiscoverPort)
-		serverAddr, err = net.ResolveUDPAddr("udp", server)
-		checkErr(err)
-		sendLen, err := conn.WriteToUDP(xmitBuf[:], serverAddr)
-		checkErr(err)
-		fmt.Println("Sent", sendLen, "bytes")
+	// send the Subscribe message
+	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
+	checkErr(err)
+	fmt.Println("Sent", sendLen, "bytes")
 
-		// read all replies
-		err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
-		noErr := true
-		for noErr {
-			readLen, fromAddr, err = conn.ReadFromUDP(inBuf)
-			if err != nil {
-				noErr = false
-			} else {
-				// fmt.Println("Read ", readLen, "bytes from ", fromAddr)
-				isMe, err := IsThisHost(fromAddr.IP)
-				checkErr(err)
-				if isMe { // Seeing our own transmission?
-					fmt.Println("read back my own transmission")
-					continue // just ignore it. We're not an S20. ;)
-				}
-				fmt.Println("got reply from subscribe message")
-				// found := false
-				// for _, addrIter := range devices {
-				// 	// fmt.Println("comparing ", addrIter, *fromAddr)
-				// 	if reflect.DeepEqual(addrIter.IpAddr, *fromAddr) {
-				// 		found = true
-				// 	}
-				// }
-				// if !found {
-				// 	d := unpackDiscoverResp(fromAddr, inBuf)
-				// 	fmt.Println("unpacked", d)
-				// 	devices = append(devices, d)
-				// 	fmt.Println("adding", fromAddr, "count", len(devices), "on", inBuf[41], "mac", d.Mac)
-				// 	txtutil.Dump(string(inBuf[:readLen]))
-				// }
-			}
+	// read all replies
+	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
+	noErr := true
+	for noErr {
+		readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
+		if err != nil {
+			noErr = false
+		} else {
+			fmt.Println("Read ", readLen, "bytes from ", fromAddr)
+			fmt.Println("got reply from subscribe message")
+			txtutil.Dump(string(inBuf[:readLen]))
 		}
-	*/
+	}
 	return nil
 }
 
