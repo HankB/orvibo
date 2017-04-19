@@ -103,7 +103,7 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	xmitBuf.WriteString(padding1)
 	xmitBuf.Write(s20device.ReverseMac)
 	xmitBuf.WriteString(padding1)
-	fmt.Println("building subscription")
+	fmt.Println("\nbuilding subscription")
 	txtutil.Dump(xmitBuf.String())
 
 	// get network connection, listen for reply on udpDiscoverPort
@@ -150,7 +150,7 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 	} else {
 		xmitBuf.WriteString(off)
 	}
-	fmt.Println("building command")
+	fmt.Println("\nbuilding command")
 	txtutil.Dump(xmitBuf.String())
 
 	// get network connection, listen for reply on udpDiscoverPort
