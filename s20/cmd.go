@@ -58,7 +58,7 @@ func Discover(timeout time.Duration) ([]Device, error) {
 	discoverMsg = append(discoverMsg, discovery...)
 	sendLen, err := conn.WriteToUDP(discoverMsg, serverAddr)
 	checkErr(err)
-	fmt.Println("Sent", sendLen, "bytes")
+	fmt.Println("Sent Discover", sendLen, "bytes")
 
 	// read all replies
 	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
@@ -104,7 +104,7 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	fmt.Println("building subscription")
 	txtutil.Dump(xmitBuf.String())
 
-	// get network connection, listen on udpDiscoverPort
+	// get network connection, listen for reply on udpDiscoverPort
 	sender := fmt.Sprintf(":%d", udpDiscoverPort)
 	ourAddr, err = net.ResolveUDPAddr("udp", sender)
 	checkErr(err)
@@ -115,9 +115,9 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	// send the Subscribe message
 	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
 	checkErr(err)
-	fmt.Println("Sent", sendLen, "bytes")
+	fmt.Println("Sent Subscribe", sendLen, "bytes")
 
-	// read all replies
+	// read single replies
 	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
 	readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
 	if err != nil {
@@ -138,6 +138,7 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 func Control(timeout time.Duration, s20device *Device, state bool) error {
 	inBuf := make([]byte, readBufLen)
 
+	// build the command
 	xmitBuf := bytes.NewBufferString(magic + control)
 	xmitBuf.Write(s20device.Mac)
 	xmitBuf.WriteString(padding1)
@@ -146,39 +147,36 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 		xmitBuf.WriteString(on)
 	} else {
 		xmitBuf.WriteString(off)
-
 	}
 	fmt.Println("building command")
 	txtutil.Dump(xmitBuf.String())
-	/*
-		// get network connection, listen on udpDiscoverPort
-		sender := fmt.Sprintf(":%d", udpDiscoverPort)
-		ourAddr, err = net.ResolveUDPAddr("udp", sender)
-		checkErr(err)
-		conn, err = net.ListenUDP("udp", ourAddr)
-		checkErr(err)
-		defer conn.Close()
 
-		// send the Subscribe message
-		sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
-		checkErr(err)
-		fmt.Println("Sent", sendLen, "bytes")
+	// get network connection, listen for reply on udpDiscoverPort
+	sender := fmt.Sprintf(":%d", udpDiscoverPort)
+	ourAddr, err = net.ResolveUDPAddr("udp", sender)
+	checkErr(err)
+	conn, err = net.ListenUDP("udp", ourAddr)
+	checkErr(err)
+	defer conn.Close()
 
-		// read all replies
-		err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
-		readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
-		if err != nil {
-			return err
-		}
-		fmt.Println("Subscribe Reply", readLen, "bytes from ", fromAddr)
-		txtutil.Dump(string(inBuf[:readLen]))
-		s20device.IsOn = inBuf[23] != 0 // capture on/off state
-		if bytes.Compare(inBuf[2:6], []byte(subscribeResp)) != 0 {
-			fmt.Println("unexpected reply")
-			return errors.New("unexpected response to subscribe")
-		}
-		s20device.subscriptionTime = time.Now()
-	*/
+	// send the Control message
+	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
+	checkErr(err)
+	fmt.Println("Sent Control", sendLen, "bytes")
+
+	// read single replies
+	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
+	readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Control Reply", readLen, "bytes from ", fromAddr)
+	txtutil.Dump(string(inBuf[:readLen]))
+	s20device.IsOn = inBuf[22] != 0 // capture on/off state
+	if bytes.Compare(inBuf[2:6], []byte(controlResp)) != 0 {
+		fmt.Println("unexpected reply")
+		return errors.New("unexpected response to Control")
+	}
 	return nil
 }
 
