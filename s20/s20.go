@@ -4,8 +4,7 @@ package s20
 import (
 	"fmt"
 	"net"
-	//"os"
-	//"strconv"
+	"time"
 )
 
 /*
@@ -52,9 +51,10 @@ const readBufLen = 1024       // 1K read buffer
 const xmitBufLen = 1024       // 1K transmit buffer
 
 type Device struct {
-	IpAddr          net.UDPAddr      // IP address
-	Mac, ReverseMac net.HardwareAddr // MAC address (and reversed)
-	IsOn            bool             // power state
+	IpAddr           net.UDPAddr      // IP address
+	Mac, ReverseMac  net.HardwareAddr // MAC address (and reversed)
+	IsOn             bool             // power state
+	subscriptionTime time.Time        // time stamp most recent subscription
 }
 
 // Init saves network parameters for later usage and
