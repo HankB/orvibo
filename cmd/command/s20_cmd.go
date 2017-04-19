@@ -17,20 +17,35 @@ func usage(errstr string) {
 
 }
 func main() {
+	// did the user pass arguments?
 
 	if len(os.Args) == 1 {
-		fmt.Println("Usage", os.Args[0])
+		fmt.Println("Usage", os.Args[0], "[-d]|[-s]")
 		os.Exit(0)
-	} else if os.Args[1] == "-d" {
+	} else if os.Args[1] == "-d" { // exercise Discover command
 		s20s, _ := s20.Discover(replyTimeout)
 		for _, s20ds := range s20s {
 			fmt.Println(s20ds)
 		}
 		os.Exit(0)
-	} else if os.Args[1] == "-s" {
+	} else if os.Args[1] == "-s" { // test Subscribe (first discovered S20)
 		s20s, _ := s20.Discover(replyTimeout)
+		if len(s20s) < 1 {
+			fmt.Println("No S20s discovered")
+			os.Exit(0)
+		}
 		e := s20.Subscribe(replyTimeout, &s20s[0])
-		fmt.Println("done", e)
+		if e == nil {
+			var state string
+			if s20s[0].IsOn {
+				state = "on"
+			} else {
+				state = "off"
+			}
+			fmt.Println("subscribed and currently", state)
+		} else {
+			fmt.Println("subscription error:", e)
+		}
 		os.Exit(0)
 	}
 	fmt.Println("Unknown command arg", os.Args[1])
