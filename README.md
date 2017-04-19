@@ -17,7 +17,7 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 Pairing with a real S20 just accomplished!
 Discover() working.
 Subscribe() seems to be working.
-Command() sends message but no effect and no reply. (Subscribe() not really working?)
+Command() now working.
 
 ## TODO
 
