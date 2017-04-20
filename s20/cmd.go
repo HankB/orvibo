@@ -25,7 +25,7 @@ func copyMac(dst *net.HardwareAddr, src []byte) {
 // unpackDiscoverResp extracts required information from the Discover reply
 // sent by the S20
 func unpackDiscoverResp(ip *net.UDPAddr, buff []byte) Device {
-	d := Device{IpAddr: *ip}
+	d := Device{IPAddr: *ip}
 	copyMac(&d.Mac, buff[7:7+6])
 	copyMac(&d.ReverseMac, buff[7+12:7+6+12])
 	d.IsOn = buff[41] != 0
@@ -77,7 +77,7 @@ func Discover(timeout time.Duration) ([]Device, error) {
 			found := false
 			for _, addrIter := range devices {
 				// fmt.Println("comparing ", addrIter, *fromAddr)
-				if reflect.DeepEqual(addrIter.IpAddr, *fromAddr) {
+				if reflect.DeepEqual(addrIter.IPAddr, *fromAddr) {
 					found = true
 				}
 			}
@@ -94,7 +94,7 @@ func Discover(timeout time.Duration) ([]Device, error) {
 }
 
 // Subscribe subscribes to the S20 and is required before sending
-// further commands.
+// further commands. S20 normally responds with one reply msg.
 func Subscribe(timeout time.Duration, s20device *Device) error {
 	inBuf := make([]byte, readBufLen)
 
@@ -115,7 +115,7 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	defer conn.Close()
 
 	// send the Subscribe message
-	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
+	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IPAddr)
 	checkErr(err)
 	fmt.Println("Sent Subscribe", sendLen, "bytes")
 
@@ -163,11 +163,17 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 
 	// send the Control message
 	finished := false // set to true when done
-	retries := 3      // allow three retries
+	skipSend := false // set to true to repeat loop w/out extra send
+
+	retries := 3 // allow three retries
 	for !finished {
-		sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
-		checkErr(err)
-		fmt.Println("Sent Control", sendLen, "bytes")
+		if !skipSend {
+			sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IPAddr)
+			checkErr(err)
+			fmt.Println("Sent Control", sendLen, "bytes")
+		} else {
+			skipSend = false
+		}
 
 		// read single replies
 		err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
@@ -177,15 +183,24 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 			continue // retry on timeout
 		} else if err != nil {
 			fmt.Println("ReadFromUDP error", err)
-			return err
+			return err // bail on error
 		}
+
+		// process reply
 		fmt.Println("Control Reply", readLen, "bytes from ", fromAddr)
-		txtutil.Dump(string(inBuf[:readLen]))
-		s20device.IsOn = inBuf[22] != 0 // capture on/off state
 		if bytes.Compare(inBuf[2:6], []byte(controlResp)) != 0 {
 			fmt.Println("unexpected Control reply", inBuf[2:6])
+			skipSend = true
 			continue // retry on unexpected message
 		}
+		txtutil.Dump(string(inBuf[:readLen]))
+		s20device.IsOn = inBuf[22] != 0 // capture on/off state
+
+		if s20device.IsOn == state {
+			return nil
+		}
+
+		// retry if not successful
 		retries-- // = retries - 1
 		if retries <= 0 {
 			return errors.New("Control retries exhausted")
