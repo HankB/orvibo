@@ -162,22 +162,34 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 	defer conn.Close()
 
 	// send the Control message
-	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
-	checkErr(err)
-	fmt.Println("Sent Control", sendLen, "bytes")
+	finished := false // set to true when done
+	retries := 3      // allow three retries
+	for !finished {
+		sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IpAddr)
+		checkErr(err)
+		fmt.Println("Sent Control", sendLen, "bytes")
 
-	// read single replies
-	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
-	readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
-	if err != nil {
-		return err
-	}
-	fmt.Println("Control Reply", readLen, "bytes from ", fromAddr)
-	txtutil.Dump(string(inBuf[:readLen]))
-	s20device.IsOn = inBuf[22] != 0 // capture on/off state
-	if bytes.Compare(inBuf[2:6], []byte(controlResp)) != 0 {
-		fmt.Println("unexpected reply")
-		return errors.New("unexpected response to Control")
+		// read single replies
+		err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
+		readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
+		if err, ok := err.(net.Error); ok && err.Timeout() {
+			fmt.Println("ReadFromUDP timeout", err)
+			continue // retry on timeout
+		} else if err != nil {
+			fmt.Println("ReadFromUDP error", err)
+			return err
+		}
+		fmt.Println("Control Reply", readLen, "bytes from ", fromAddr)
+		txtutil.Dump(string(inBuf[:readLen]))
+		s20device.IsOn = inBuf[22] != 0 // capture on/off state
+		if bytes.Compare(inBuf[2:6], []byte(controlResp)) != 0 {
+			fmt.Println("unexpected Control reply", inBuf[2:6])
+			continue // retry on unexpected message
+		}
+		retries-- // = retries - 1
+		if retries <= 0 {
+			return errors.New("Control retries exhausted")
+		}
 	}
 	return nil
 }
