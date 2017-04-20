@@ -10,9 +10,10 @@ unorthodox. Feel free to submit issues suggesting improvement.
 
 ## Status
 
-Work in progress
-Pairing is the present focus. Complete pairing sequence with a fake S20
-(`https://bitbucket.org/HankB/orvibo-s20` S20-emulate.py) just accomplished.
+Basic functionality is now complete and an Orvibo S20 can be paired to
+an Access Point and turned on and off as desired (albeit with a lot of
+debug output.) Support for timer functions is not presently planned. For
+personal use it is easier to provide timed operations via a host PC.
 
 * Pairing with a real S20 just accomplished!
 * Discover() working.
