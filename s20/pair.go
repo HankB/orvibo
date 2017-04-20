@@ -49,7 +49,7 @@ func Pair() []string {
 	// request S/V version
 	fmt.Printf("S20 S/W Version '%s'\n", sendRcv(queryVER))
 
-	// request modile ID
+	// request module ID
 	fmt.Printf("S20 MID '%s'\n", sendRcv([]byte(queryMID)))
 
 	// send module name
