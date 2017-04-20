@@ -17,11 +17,12 @@ Pairing is the present focus. Complete pairing sequence with a fake S20
 Pairing with a real S20 just accomplished!
 Discover() working.
 Subscribe() seems to be working.
-Command() now working. Sometimes. When it does work, the S20 replies with the
-control message rather than controlResp. More investigation is required.
+Command() now working. It requires retries to 'sink in.'
 
 ## TODO
 
+* Use the primitives to build useful commands to turn S20 devices on/off
+  using IP address or host name.
 * Check to see if pairing works with already paired device.
 * Rework error handling to do something more useful than print error and exit.
 * Implement on ON/OFF commands.
@@ -30,6 +31,9 @@ control message rather than controlResp. More investigation is required.
 * Revisit testing and avoid the use of the environment variables.
 * Test to see if pairing can be performed while the S20 is already paired.
   (e.g. will the S20 respond to the AT commands if it is not in AP mode)
+* Skip resend of Control when the Control message is echoed back. The S20
+  will probably send the expected reply shortly and resending the Control
+  message will just add extra traffic.
 
 ## Purpose
 
@@ -171,6 +175,21 @@ hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
 ## Protocol
 
 See details at `http://pastebin.com/LfUhsbcS` (Now part of project at orvibo_wifi_socket.txt)
+
+### Process
+
+The command sequence requires the following steps:
+
+* Discovery Identify the devices available. The S20 replies ten times with
+  the discovery response. (This might be eliminated if a database is kept
+  that holds the information cleaned from Discovery.)
+* Subscription - According to the Python variants a Control message must
+  follow a Subscribe message within 60 seconds. The current application
+  doesn't retain this state and just Subscribes before sending the Control
+  message.
+* Control - Typical interchange is that the S20 does not reply the first
+  time this is sent. The second time it echoes the message back and then
+  sends the expected message. This app resends the 
 
 ## Errata
 
