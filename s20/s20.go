@@ -50,8 +50,9 @@ const udpDiscoverPort = 10000 // port to send discovery message
 const readBufLen = 1024       // 1K read buffer
 const xmitBufLen = 1024       // 1K transmit buffer
 
+// Device encapsulates information about an S20
 type Device struct {
-	IpAddr           net.UDPAddr      // IP address
+	IPAddr           net.UDPAddr      // IP address
 	Mac, ReverseMac  net.HardwareAddr // MAC address (and reversed)
 	IsOn             bool             // power state
 	subscriptionTime time.Time        // time stamp most recent subscription
@@ -59,12 +60,12 @@ type Device struct {
 
 // Init saves network parameters for later usage and
 // opens the port
-func Init(SSID string, password string, module_ID string) {
+func Init(SSID string, password string, moduleID string) {
 	ssid = SSID
 	// ip = IP
 	pwd = password
 	swStr = fmt.Sprintf("%s:%d", s20IP, udpSndPort)
-	mid = module_ID
+	mid = moduleID
 }
 
 //Get returns 'object' parameters for testing
