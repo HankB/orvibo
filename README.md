@@ -14,13 +14,15 @@ Work in progress
 Pairing is the present focus. Complete pairing sequence with a fake S20
 (`https://bitbucket.org/HankB/orvibo-s20` S20-emulate.py) just accomplished.
 
-Pairing with a real S20 just accomplished!
-Discover() working.
-Subscribe() seems to be working.
-Command() now working. It requires retries to 'sink in.'
+* Pairing with a real S20 just accomplished!
+* Discover() working.
+* Subscribe() seems to be working.
+* Command() now working. It requires retries to 'sink in.'
+** Milestone: The application can now turn a switch off/on at will.
 
 ## TODO
 
+* Do something about the excessive debug output!
 * Use the primitives to build useful commands to turn S20 devices on/off
   using IP address or host name.
 * Check to see if pairing works with already paired device.
@@ -171,6 +173,62 @@ hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
 ```
 
 (Note: Spot the bug - now fixed - in the output above! Hint MAC addresses)
+
+#### Control
+
+This test exercises an actual S20 device that has been given the name s20n01.
+Run the following command to turn it on.
+
+``` text
+go run cmd/command/s20_cmd.go -c s20n01 on
+```
+
+and expect the following result
+
+``` text
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$ go run cmd/command/s20_cmd.go -c s20n01 on
+resolved as  192.168.1.160
+Sent Discover 6 bytes
+unpacked {{192.168.1.160 10000 } ac:cf:23:55:fe:22 22:fe:55:23:cf:ac false {0 0 <nil>}}
+adding 192.168.1.160:10000 count 1 on 0 mac ac:cf:23:55:fe:22
+00000000  68 64 00 2a 71 61 00 ac  cf 23 55 fe 22 20 20 20  |hd.*qa...#U."   |
+00000010  20 20 20 22 fe 55 23 cf  ac 20 20 20 20 20 20 53  |   ".U#..      S|
+00000020  4f 43 30 30 35 b8 38 21  bc 00                    |OC005.8!..|
+0000002a
+unpacked {{192.168.1.212 10000 } ac:cf:23:36:02:0e 0e:02:36:23:cf:ac false {0 0 <nil>}}
+adding 192.168.1.212:10000 count 2 on 0 mac ac:cf:23:36:02:0e
+00000000  68 64 00 2a 71 61 00 ac  cf 23 36 02 0e 20 20 20  |hd.*qa...#6..   |
+00000010  20 20 20 0e 02 36 23 cf  ac 20 20 20 20 20 20 53  |   ..6#..      S|
+00000020  4f 43 30 30 35 af 92 a3  dc 00                    |OC005.....|
+0000002a
+
+building subscription
+00000000  68 64 00 1e 63 6c ac cf  23 55 fe 22 20 20 20 20  |hd..cl..#U."    |
+00000010  20 20 22 fe 55 23 cf ac  20 20 20 20 20 20        |  ".U#..      |
+0000001e
+Sent Subscribe 30 bytes
+Subscribe Reply 24 bytes from  192.168.1.160:10000
+00000000  68 64 00 18 63 6c ac cf  23 55 fe 22 20 20 20 20  |hd..cl..#U."    |
+00000010  20 20 00 00 00 00 00 00                           |  ......|
+00000018
+subscribed and currently off
+
+building command
+00000000  68 64 00 17 64 63 ac cf  23 55 fe 22 20 20 20 20  |hd..dc..#U."    |
+00000010  20 20 00 00 00 00 01                              |  .....|
+00000017
+Sent Control 23 bytes
+Control Reply 23 bytes from  192.168.1.160:10000
+unexpected Control reply [0 23 100 99]
+Control Reply 23 bytes from  192.168.1.160:10000
+00000000  68 64 00 17 73 66 ac cf  23 55 fe 22 20 20 20 20  |hd..sf..#U."    |
+00000010  20 20 00 00 00 00 01                              |  .....|
+00000017
+commanded and currently on
+hbarta@olive:~/Documents/go-work/src/github.com/HankB/orvibo$
+```
+
+If within earshot, the S20 emits an audible click when turned on or off.
 
 ## Protocol
 
