@@ -4,21 +4,28 @@ package main
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"net"
 	"os"
 
 	"github.com/HankB/orvibo/s20"
+	"github.com/HankB/txtutil"
 )
+
+// output conventions -
+// - by default output with priority >= 4 is displayed.
+// - error messages are set to 6
+// - minimal information to monitor progess set to 4 (display by default)
+// - additional information at 3.
+// - full dumps of sent/received messages at 1
 
 const replyTimeout = 1 // reply timeout in seconds
 var s20s []s20.Device
 
 func usage(errstr string) {
 	if len(errstr) > 0 {
-		fmt.Println(errstr)
+		txtutil.PriFmtPrintln(6, errstr)
 	}
-	fmt.Println("Usage", os.Args[0], "[-d]|[-s][-c [host|IP addr] [on|off]]")
+	txtutil.PriFmtPrintln(6, "Usage", os.Args[0], "[-v|-vv][[-d]|[-s][-c [host|IP addr] [on|off]]]")
 	os.Exit(0)
 }
 
@@ -31,20 +38,36 @@ func findDeviceByIP(addr *net.IPAddr) (s20.Device, error) {
 	return s20s[0], errors.New("IP not found in discover list")
 }
 
-func main() {
+// process arguments (and return) until there are no more
+// to process
+func processArgs(args []string) []string {
 	var cmd bool
 	var state string
 
-	// did the user pass arguments?
-	if len(os.Args) == 1 {
+	if len(args) == 1 {
 		usage("")
-	} else if os.Args[1] == "-d" { // exercise Discover command
+	} else if args[1] == "-v" { // exercise Discover command
+		if len(args) < 3 {
+			usage("\"-v\" cannot be last argument")
+		}
+		args = append(args[:1], args[2:]...)
+		txtutil.SetDumpPriority(4)
+		// os.Exit(0)
+	} else if args[1] == "-vv" { // exercise Discover command
+		if len(args) < 3 {
+			usage("\"-vv\" cannot be last argument")
+		}
+		args = append(args[:1], args[2:]...)
+		txtutil.SetDumpPriority(3)
+		txtutil.SetDumpPriority(3)
+		// os.Exit(0)
+	} else if args[1] == "-d" { // exercise Discover command
 		s20s, _ := s20.Discover(replyTimeout)
 		for _, s20ds := range s20s {
-			fmt.Println(s20ds)
+			txtutil.PriFmtPrintln(4, s20ds)
 		}
 		os.Exit(0)
-	} else if os.Args[1] == "-s" { // test Subscribe (first discovered S20)
+	} else if args[1] == "-s" { // test Subscribe (first discovered S20)
 		s20s, _ := s20.Discover(replyTimeout)
 		if len(s20s) < 1 {
 			usage("No S20s discovered")
@@ -57,37 +80,37 @@ func main() {
 			} else {
 				state = "off"
 			}
-			fmt.Println("subscribed and currently", state)
+			txtutil.PriFmtPrintln(4, s20s[0].IPAddr.IP, "subscribed and currently", state)
 		} else {
-			fmt.Println("subscription error:", e)
+			txtutil.PriFmtPrintln(6, "subscription error:", e)
 		}
 		os.Exit(0)
-	} else if os.Args[1] == "-c" { // test Control (first discovered S20)
-		if len(os.Args) < 4 {
+	} else if args[1] == "-c" { // test Control (first discovered S20)
+		if len(args) < 4 {
 			usage("")
 		}
 
 		// unpack on/off command
-		if os.Args[3] == "on" {
+		if args[3] == "on" {
 			cmd = true
-		} else if os.Args[3] == "off" {
+		} else if args[3] == "off" {
 			cmd = false
 		} else {
-			usage("command must be \"on\" or \"off\" (found \"" + os.Args[3] + "\")")
+			usage("command must be \"on\" or \"off\" (found \"" + args[3] + "\")")
 		}
 
 		// resolve the IP address provided
-		ipAddr, err := net.ResolveIPAddr("ip", os.Args[2])
+		ipAddr, err := net.ResolveIPAddr("ip", args[2])
 		if err != nil {
-			usage("Cannot resolve " + os.Args[2])
+			usage("Cannot resolve " + args[2])
 		}
-		fmt.Println("resolved as ", ipAddr)
+		txtutil.PriFmtPrintln(3, "resolved as ", ipAddr)
 
 		s20s, _ = s20.Discover(replyTimeout)
 
 		dev, err := findDeviceByIP(ipAddr)
-		if len(s20s) < 1 {
-			fmt.Println("No S20s discovered")
+		if err != nil {
+			txtutil.PriFmtPrintln(4, "No S20s discovered at that IP", ipAddr.IP)
 			os.Exit(0)
 		}
 		e := s20.Subscribe(replyTimeout, &dev)
@@ -97,9 +120,9 @@ func main() {
 			} else {
 				state = "off"
 			}
-			fmt.Println("subscribed and currently", state)
+			txtutil.PriFmtPrintln(3, "subscribed and currently", state)
 		} else {
-			fmt.Println("subscription error:", e)
+			txtutil.PriFmtPrintln(3, "subscription error:", e)
 		}
 		e = s20.Control(replyTimeout, &dev, cmd)
 		if e == nil {
@@ -108,12 +131,22 @@ func main() {
 			} else {
 				state = "off"
 			}
-			fmt.Println("commanded and currently", state)
+			txtutil.PriFmtPrintln(4, "commanded and currently", state)
 		} else {
-			fmt.Println("control error:", e)
+			txtutil.PriFmtPrintln(4, "control error:", e)
 		}
 		os.Exit(0)
+	} else {
+		// did the user pass arguments?
+		usage("Unknown command arg \"" + os.Args[1] + "\"")
 	}
-	fmt.Println("Unknown command arg", os.Args[1])
-	os.Exit(1)
+	return args
+}
+
+func main() {
+	args := os.Args
+	for len(args) > 1 {
+		args = processArgs(args)
+	}
+	usage("")
 }
