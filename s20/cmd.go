@@ -58,7 +58,8 @@ func Discover(timeout time.Duration) ([]Device, error) {
 	discoverMsg = append(discoverMsg, discovery...)
 	sendLen, err := conn.WriteToUDP(discoverMsg, serverAddr)
 	checkErr(err)
-	fmt.Println("Sent Discover", sendLen, "bytes")
+	txtutil.PriDump(3, string(discoverMsg))
+	txtutil.PriFmtPrintln(4, "Sent Discover", sendLen, "bytes to", serverAddr)
 
 	// read all replies
 	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
@@ -68,7 +69,7 @@ func Discover(timeout time.Duration) ([]Device, error) {
 		if err != nil {
 			noErr = false
 		} else {
-			// fmt.Println("Read ", readLen, "bytes from ", fromAddr)
+			// txtutil.PriFmtPrintln(2, "Read ", readLen, "bytes from ", fromAddr)
 			isMe, err := IsThisHost(fromAddr.IP)
 			checkErr(err)
 			if isMe { // Seeing our own transmission?
@@ -76,17 +77,17 @@ func Discover(timeout time.Duration) ([]Device, error) {
 			}
 			found := false
 			for _, addrIter := range devices {
-				// fmt.Println("comparing ", addrIter, *fromAddr)
+				// txtutil.PriFmtPrintln(2, "comparing ", addrIter, *fromAddr)
 				if reflect.DeepEqual(addrIter.IPAddr, *fromAddr) {
 					found = true
 				}
 			}
 			if !found {
 				d := unpackDiscoverResp(fromAddr, inBuf)
-				fmt.Println("unpacked", d)
+				txtutil.PriFmtPrintln(3, "unpacked", d)
 				devices = append(devices, d)
-				fmt.Println("adding", fromAddr, "count", len(devices), "on", inBuf[41], "mac", d.Mac)
-				txtutil.Dump(string(inBuf[:readLen]))
+				txtutil.PriFmtPrintln(4, "adding", fromAddr, "count", len(devices), "on", inBuf[41], "mac", d.Mac)
+				txtutil.PriDump(3, string(inBuf[:readLen]))
 			}
 		}
 	}
@@ -103,8 +104,8 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	xmitBuf.WriteString(padding1)
 	xmitBuf.Write(s20device.ReverseMac)
 	xmitBuf.WriteString(padding1)
-	fmt.Println("\nbuilding subscription")
-	txtutil.Dump(xmitBuf.String())
+	txtutil.PriFmtPrintln(3, "\nbuilding subscription")
+	txtutil.PriDump(3, xmitBuf.String())
 
 	// get network connection, listen for reply on udpDiscoverPort
 	sender := fmt.Sprintf(":%d", udpDiscoverPort)
@@ -117,7 +118,7 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	// send the Subscribe message
 	sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IPAddr)
 	checkErr(err)
-	fmt.Println("Sent Subscribe", sendLen, "bytes")
+	txtutil.PriFmtPrintln(2, "Sent Subscribe", sendLen, "bytes")
 
 	// read single replies
 	err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
@@ -125,11 +126,11 @@ func Subscribe(timeout time.Duration, s20device *Device) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Subscribe Reply", readLen, "bytes from ", fromAddr)
-	txtutil.Dump(string(inBuf[:readLen]))
+	txtutil.PriFmtPrintln(2, "Subscribe Reply", readLen, "bytes from ", fromAddr)
+	txtutil.PriDump(3, string(inBuf[:readLen]))
 	s20device.IsOn = inBuf[23] != 0 // capture on/off state
 	if bytes.Compare(inBuf[2:6], []byte(subscribeResp)) != 0 {
-		fmt.Println("unexpected reply")
+		txtutil.PriFmtPrintln(3, "unexpected reply")
 		return errors.New("unexpected response to subscribe")
 	}
 	s20device.subscriptionTime = time.Now()
@@ -150,8 +151,8 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 	} else {
 		xmitBuf.WriteString(off)
 	}
-	fmt.Println("\nbuilding command")
-	txtutil.Dump(xmitBuf.String())
+	txtutil.PriFmtPrintln(3, "\nbuilding command")
+	txtutil.PriDump(3, xmitBuf.String())
 
 	// get network connection, listen for reply on udpDiscoverPort
 	sender := fmt.Sprintf(":%d", udpDiscoverPort)
@@ -170,7 +171,7 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 		if !skipSend {
 			sendLen, err := conn.WriteToUDP(xmitBuf.Bytes(), &s20device.IPAddr)
 			checkErr(err)
-			fmt.Println("Sent Control", sendLen, "bytes")
+			txtutil.PriFmtPrintln(3, "Sent Control", sendLen, "bytes")
 		} else {
 			skipSend = false
 		}
@@ -179,21 +180,21 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 		err = conn.SetReadDeadline(time.Now().Add(timeout * time.Second))
 		readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
 		if err, ok := err.(net.Error); ok && err.Timeout() {
-			fmt.Println("ReadFromUDP timeout", err)
+			txtutil.PriFmtPrintln(4, "ReadFromUDP timeout", err)
 			continue // retry on timeout
 		} else if err != nil {
-			fmt.Println("ReadFromUDP error", err)
+			txtutil.PriFmtPrintln(4, "ReadFromUDP error", err)
 			return err // bail on error
 		}
 
 		// process reply
-		fmt.Println("Control Reply", readLen, "bytes from ", fromAddr)
+		txtutil.PriFmtPrintln(3, "Control Reply", readLen, "bytes from ", fromAddr)
 		if bytes.Compare(inBuf[2:6], []byte(controlResp)) != 0 {
-			fmt.Println("unexpected Control reply", inBuf[2:6])
+			txtutil.PriFmtPrintln(4, "unexpected Control reply", inBuf[2:6])
 			skipSend = true
 			continue // retry on unexpected message
 		}
-		txtutil.Dump(string(inBuf[:readLen]))
+		txtutil.PriDump(3, string(inBuf[:readLen]))
 		s20device.IsOn = inBuf[22] != 0 // capture on/off state
 
 		if s20device.IsOn == state {
