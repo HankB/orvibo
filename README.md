@@ -19,7 +19,7 @@ personal use it is easier to provide timed operations via a host PC.
 * Discover() working.
 * Subscribe() seems to be working.
 * Command() now working. It requires retries to 'sink in.'
-** Milestone: The application can now turn a switch off/on at will.
+* Milestone: The application can now turn a switch off/on at will.
 
 ## TODO
 
@@ -37,6 +37,11 @@ personal use it is easier to provide timed operations via a host PC.
 * Skip resend of Control when the Control message is echoed back. The S20
   will probably send the expected reply shortly and resending the Control
   message will just add extra traffic.
+
+## Dependencies
+
+* `https://github.com/HankB/txtutil`
+* `https://github.com/HankB/netutil`
 
 ## Purpose
 
