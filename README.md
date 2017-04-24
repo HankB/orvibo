@@ -10,6 +10,8 @@ unorthodox. Feel free to submit issues suggesting improvement.
 
 ## Status
 
+At this point my itch has been scratched. What I needed to do with the Orvibo S20 is done (barring any bugs found in testing or reported by others.)
+
 Basic functionality is now complete and an Orvibo S20 can be paired to
 an Access Point and turned on and off as desired (albeit with a lot of
 debug output.) Support for timer functions is not presently planned. For
