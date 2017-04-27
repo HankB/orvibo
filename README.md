@@ -53,7 +53,7 @@ the local WiFi network. Second, a program is required to turn the switch on and 
 
 The switch supports additional functionality (timed on/off.)
 
-## Pairing
+## Pairing options
 
 * One method is for another host on the network to send out various length messages
   where the password is encoded in the length of the messages (or something like that.)
