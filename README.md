@@ -2,6 +2,10 @@
 
 Orvibo S20 in Go (golang)
 
+The S20 has been discontinued and it seems the only units available are at high 
+price. For this reason (and the fact that basic on/off functionality has been 
+accomplished) no further effort will be put into this project.
+
 ## Warning
 
 This is my first significant Go project and I'm sure I have much to learn. In
