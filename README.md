@@ -44,6 +44,12 @@ personal use it is easier to provide timed operations via a host PC.
   will probably send the expected reply shortly and resending the Control
   message will just add extra traffic.
 
+## Building
+
+    `go build cmd/command/s20_cmd.go`
+
+This will leave the executable `s20_cmd` in the current directory (executed in the
+base directory for the repository.)
 ## Dependencies
 
 * `https://github.com/HankB/txtutil`
