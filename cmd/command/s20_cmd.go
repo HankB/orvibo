@@ -46,14 +46,14 @@ func processArgs(args []string) []string {
 
 	if len(args) == 1 {
 		usage("")
-	} else if args[1] == "-v" { // exercise Discover command
+	} else if args[1] == "-v" { // increase verbosity
 		if len(args) < 3 {
 			usage("\"-v\" cannot be last argument")
 		}
 		args = append(args[:1], args[2:]...)
 		txtutil.SetDumpPriority(4)
 		// os.Exit(0)
-	} else if args[1] == "-vv" { // exercise Discover command
+	} else if args[1] == "-vv" { // increase verbosity even more
 		if len(args) < 3 {
 			usage("\"-vv\" cannot be last argument")
 		}
@@ -85,8 +85,8 @@ func processArgs(args []string) []string {
 			txtutil.PriFmtPrintln(6, "subscription error:", e)
 		}
 		os.Exit(0)
-	} else if args[1] == "-c" { // test Control (first discovered S20)
-		if len(args) < 4 {
+	} else if args[1] == "-c" { // exercise Control 
+		if len(args) < 4 {		// must include host or IP and on/off command 
 			usage("")
 		}
 
@@ -106,14 +106,15 @@ func processArgs(args []string) []string {
 		}
 		txtutil.PriFmtPrintln(3, "resolved as ", ipAddr)
 
-		s20s, _ = s20.Discover(replyTimeout)
+		s20s, _ = s20.Discover(replyTimeout)	// Discovery must precede subscription and command
 
-		dev, err := findDeviceByIP(ipAddr)
+		dev, err := findDeviceByIP(ipAddr)		// match desired device with those discovered.
 		if err != nil {
 			txtutil.PriFmtPrintln(4, "No S20s discovered at that IP", ipAddr.IP)
 			os.Exit(0)
 		}
-		e := s20.Subscribe(replyTimeout, &dev)
+
+		e := s20.Subscribe(replyTimeout, &dev)	// subscribe to desired device
 		if e == nil {
 			if dev.IsOn {
 				state = "on"
