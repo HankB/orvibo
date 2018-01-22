@@ -181,7 +181,8 @@ func Control(timeout time.Duration, s20device *Device, state bool) error {
 		readLen, fromAddr, err := conn.ReadFromUDP(inBuf)
 		if err, ok := err.(net.Error); ok && err.Timeout() {
 			txtutil.PriFmtPrintln(4, "ReadFromUDP timeout", err)
-			continue // retry on timeout
+			//continue // retry on timeout
+			return err // bail on timeout
 		} else if err != nil {
 			txtutil.PriFmtPrintln(4, "ReadFromUDP error", err)
 			return err // bail on error
